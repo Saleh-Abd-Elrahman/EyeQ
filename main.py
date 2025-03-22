@@ -1,176 +1,114 @@
 #!/usr/bin/env python3
 """
-Main application for Smart Eye-Tracking Shelves for Retail Optimization.
-
-This application uses computer vision and eye-tracking to analyze how customers
-interact with products on retail shelves.
+Improved main application for Smart Eye-Tracking on Amazon pages.
+Tracks gaze, gracefully handles browser closure, and reports only viewed products.
 """
 
-import os
-import sys
 import time
-import argparse
 import logging
-from typing import Dict, Any
-
-# Import configuration
+import numpy as np
+import cv2
 import config
-
-# Import components
-from utils.camera import Camera, VideoFileCamera, list_available_cameras
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from models.eye_tracking_model import EyeTracker
-from models.shelf_analysis_model import ShelfAnalyzer, Product
+from utils.camera import Camera
+from analytics.dynamic_grid_extractor import extract_amazon_product_regions
 from analytics.attention_analytics import AttentionAnalytics
-from ui.dashboard import launch_dashboard
 
-# Set up logging
 logging.basicConfig(
     level=getattr(logging, config.LOG_LEVEL),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
-
-def parse_arguments() -> Dict[str, Any]:
-    """
-    Parse command line arguments.
-    
-    Returns:
-        Dict containing parsed arguments
-    """
-    parser = argparse.ArgumentParser(
-        description="Smart Eye-Tracking Shelves for Retail Optimization"
-    )
-    
-    parser.add_argument(
-        "--camera", 
-        type=int, 
-        default=config.CAMERA_INDEX,
-        help="Camera index to use (default: {})".format(config.CAMERA_INDEX)
-    )
-    
-    parser.add_argument(
-        "--video", 
-        type=str, 
-        help="Path to video file for processing instead of live camera"
-    )
-    
-    parser.add_argument(
-        "--debug", 
-        action="store_true", 
-        help="Enable debug mode"
-    )
-    
-    parser.add_argument(
-        "--output", 
-        type=str, 
-        default=config.OUTPUT_DIR,
-        help="Output directory for analytics data (default: {})".format(config.OUTPUT_DIR)
-    )
-    
-    parser.add_argument(
-        "--mode", 
-        type=str, 
-        choices=["shelf", "checkout"], 
-        default="shelf",
-        help="Operation mode: shelf or checkout (default: shelf)"
-    )
-    
-    args = parser.parse_args()
-    
-    return vars(args)
-
-
-def initialize_components(args):
-    """
-    Initialize system components based on arguments.
-    
-    Args:
-        args: Parsed command line arguments
-        
-    Returns:
-        Tuple of (camera, eye_tracker, shelf_analyzer, analytics)
-    """
-    # Set debug mode if requested
-    if args["debug"]:
-        logging.getLogger().setLevel(logging.DEBUG)
-        config.DEBUG = True
-        logger.debug("Debug mode enabled")
-    
-    # Create camera
-    if args["video"]:
-        logger.info(f"Using video file: {args['video']}")
-        camera = VideoFileCamera(args["video"])
-    else:
-        camera_index = args["camera"]
-        logger.info(f"Using camera index: {camera_index}")
-        camera = Camera(
-            camera_index=camera_index,
-            width=config.FRAME_WIDTH,
-            height=config.FRAME_HEIGHT,
-            fps=config.FPS
-        )
-    
-    # Create eye tracker
-    eye_tracker = EyeTracker(
-        min_detection_confidence=config.MIN_DETECTION_CONFIDENCE,
-        min_tracking_confidence=config.MIN_TRACKING_CONFIDENCE,
-        max_num_faces=config.MAX_NUM_FACES
-    )
-    
-    # Create shelf analyzer
-    shelf_analyzer = ShelfAnalyzer(
-        frame_width=config.FRAME_WIDTH,
-        frame_height=config.FRAME_HEIGHT
-    )
-    
-    # Set up a demo shelf with products if in shelf mode
-    if args["mode"] == "shelf":
-        # Create a demo shelf layout
-        shelf_analyzer.create_demo_shelf(
-            width=config.FRAME_WIDTH,
-            height=config.FRAME_HEIGHT,
-            rows=3,
-            cols=4
-        )
-    else:  # Checkout mode
-        # Define checkout UI regions
-        for name, region in config.CHECKOUT_AOI_REGIONS.items():
-            product = Product(
-                id=f"checkout_{name}",
-                name=f"Checkout {name.replace('_', ' ').title()}",
-                price=0.0,
-                position=region
-            )
-            shelf_analyzer.add_product(product)
-    
-    # Create analytics
-    analytics = AttentionAnalytics()
-    
-    return camera, eye_tracker, shelf_analyzer, analytics
-
+def setup_browser():
+    chrome_options = Options()
+    chrome_options.add_argument("--start-maximized")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    return driver
 
 def main():
-    """Main application entry point."""
-    
-    # Parse command line arguments
-    args = parse_arguments()
-    
-    # Ensure output directory exists
-    os.makedirs(args["output"], exist_ok=True)
-    
-    # Initialize components
-    camera, eye_tracker, shelf_analyzer, analytics = initialize_components(args)
-    
-    # Launch the dashboard UI
-    launch_dashboard(camera, eye_tracker, shelf_analyzer, analytics)
+    driver = setup_browser()
+    url = "https://www.amazon.es/s?k=laptop"
+    driver.get(url)
+    logger.info(f"Opened webpage: {url}")
 
+    product_regions = extract_amazon_product_regions(driver)
+    logger.info(f"Extracted {len(product_regions)} potential products from Amazon.")
+
+    eye_tracker = EyeTracker()
+    camera = Camera()
+    if not camera.start():
+        logger.error("Failed to start camera. Exiting.")
+        return
+
+    homography = np.load('calibration_homography.npy', allow_pickle=True)
+    attention = AttentionAnalytics(product_regions=product_regions)
+
+    logger.info("Tracking started — scroll manually.")
+    print("Scroll manually, press Ctrl+C, close browser, or terminal to stop...")
+
+    try:
+        while True:
+            try:
+                driver.title  # Check if browser is open
+            except:
+                logger.info("Browser closed by user.")
+                break
+
+            success, frame = camera.read()
+            if not success or frame is None:
+                logger.warning("Camera frame not captured.")
+                continue
+
+            result = eye_tracker.process_frame(frame)
+            gaze_point = result.get("gaze_point")
+
+            if gaze_point:
+                gaze_array = np.array([gaze_point[0], gaze_point[1], 1]).reshape(3, 1)
+                screen_point = homography @ gaze_array
+                screen_point /= screen_point[2]
+                screen_x, screen_y = int(screen_point[0].item()), int(screen_point[1].item())
+                timestamp = time.time()
+
+                for product in product_regions:
+                    left, top, right, bottom = product["bbox"]
+                    if left <= screen_x <= right and top <= screen_y <= bottom:
+                        product["total_attention_time"] = product.get("total_attention_time", 0) + 0.1
+                        attention.attention_history.append({
+                            "timestamp": timestamp,
+                            "product_id": product["id"],
+                            "product_name": product["name"],
+                            "duration": 0.1
+                        })
+                        break
+
+            time.sleep(0.1)
+
+    except KeyboardInterrupt:
+        logger.info("Session ended by user.")
+    finally:
+        camera.stop()
+        driver.quit()
+        eye_tracker.__del__()
+
+        logger.info("Filtering products that received attention...")
+        viewed_products = [p for p in product_regions if p.get("total_attention_time", 0) > 0]
+        attention.product_regions = viewed_products
+
+        logger.info(f"{len(viewed_products)} products viewed by user.")
+
+        output_dir = "analytics_reports"
+        attention.export_analytics_report(output_dir=output_dir)
+        logger.info("Done!")
 
 if __name__ == "__main__":
     try:
         main()
-    except KeyboardInterrupt:
-        logger.info("Application terminated by user")
     except Exception as e:
-        logger.exception(f"Unhandled exception: {e}")
-        sys.exit(1) 
+        logger.exception("Unhandled error in main application.")

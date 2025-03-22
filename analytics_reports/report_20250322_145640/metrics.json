@@ -1,0 +1,71 @@
+{
+    "session_duration": 12.425763845443726,
+    "total_attention_time": 0.4,
+    "product_count": 60,
+    "products_by_attention_time": [
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 419.99,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742651800.165374
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 829.0,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742651787.7396102
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 319.99,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742651799.033386
+        }
+    ],
+    "products_by_attention_count": [
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 419.99,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742651800.165374
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 829.0,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742651787.7396102
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 319.99,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742651799.033386
+        }
+    ],
+    "attention_percentages": {
+        "product_2": 25.0,
+        "product_3": 25.0,
+        "product_4": 50.0
+    },
+    "ignored_products": [],
+    "ignored_percentage": 0.0,
+    "timestamp": 1742651800.531174
+}

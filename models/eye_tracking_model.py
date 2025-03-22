@@ -298,6 +298,9 @@ class EyeTracker:
         """
         Clean up resources.
         """
-        if hasattr(self, 'face_mesh'):
-            self.face_mesh.close()
-        logger.info("Eye tracker resources released") 
+        if hasattr(self, 'face_mesh') and self.face_mesh is not None:
+            try:
+                self.face_mesh.close()
+            except ValueError as e:
+                logger.warning(f"Attempted to close already closed face_mesh: {e}")
+        logger.info("Eye tracker resources released")
