@@ -549,7 +549,22 @@ class AttentionAnalytics:
                     attention_percentages[pid] = 0
             
             # Find ignored products
-            ignored_products = [p for p in products_list if p["attention_count"] == 0]
+            #ignored_products = [p for p in products_list if p["attention_count"] == 0]
+                # After processing attention history and before creating metrics dictionary
+            
+            # Get all product IDs
+            all_product_ids = [p.get("id") for p in self.products]
+            
+            # Get IDs of products that received attention
+            viewed_product_ids = set(record.get("product_id") for record in self.attention_history 
+                                    if record.get("product_id") is not None)
+            
+            # Find ignored products (those with no attention)
+            ignored_product_ids = [pid for pid in all_product_ids if pid not in viewed_product_ids]
+            ignored_products = [p for p in self.products if p.get("id") in ignored_product_ids]
+            
+            # Calculate ignored percentage
+            ignored_percentage = (len(ignored_products) / len(self.products)) * 100 if self.products else 0
             
             # Create metrics dictionary
             self.metrics = {
@@ -560,7 +575,7 @@ class AttentionAnalytics:
                 "products_by_attention_count": sorted_by_count,
                 "attention_percentages": attention_percentages,
                 "ignored_products": ignored_products,
-                "ignored_percentage": (len(ignored_products) / len(self.products)) * 100 if self.products else 0,
+                "ignored_percentage": ignored_percentage,
                 "timestamp": datetime.now().timestamp()
             }
             
@@ -810,10 +825,12 @@ class AttentionAnalytics:
             ignored_products_table = ""
             try:
                 for product in ignored_products:
+                    price_display = f"{product.get('price', 0):.2f}"
+                    currency = product.get('currency', '$')
                     ignored_products_table += f"""<tr>
                 <td>{product["name"]}</td>
                 <td>{product["category"]}</td>
-                <td>${product["price"]:.2f}</td>
+                <td>${currency}{price_display}</td>
             </tr>"""
                     
                 if not ignored_products:

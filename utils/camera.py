@@ -18,7 +18,7 @@ class Camera:
     Camera class for handling video input from webcams or other camera devices.
     """
     
-    def __init__(self, camera_index: int = 0, width: int = 1280, height: int = 720, fps: int = 30):
+    def __init__(self, camera_index: int = 0, width: int = 1280, height: int = 720, fps: int = 30, horizontal_flip: bool = False):
         """
         Initialize the camera.
         
@@ -27,11 +27,13 @@ class Camera:
             width: Width of the video frame (default: 1280)
             height: Height of the video frame (default: 720)
             fps: Frames per second (default: 30)
+            horizontal_flip: Whether to flip the camera input horizontally (default: False)
         """
         self.camera_index = camera_index
         self.width = width
         self.height = height
         self.fps = fps
+        self.horizontal_flip = horizontal_flip
         self.cap = None
         self.is_running = False
         self.last_frame_time = 0
@@ -83,6 +85,10 @@ class Camera:
         success, frame = self.cap.read()
         
         if success:
+            # Apply horizontal flip if enabled
+            if self.horizontal_flip:
+                frame = cv2.flip(frame, 1)  # 1 means flip horizontally
+                
             self.frame_count += 1
             current_time = time.time()
             time_diff = current_time - self.last_frame_time
@@ -118,15 +124,16 @@ class VideoFileCamera(Camera):
     Useful for testing and demonstrations.
     """
     
-    def __init__(self, video_path: str, loop: bool = True):
+    def __init__(self, video_path: str, loop: bool = True, horizontal_flip: bool = False):
         """
         Initialize with a video file path.
         
         Args:
             video_path: Path to the video file
             loop: Whether to loop the video when it ends (default: True)
+            horizontal_flip: Whether to flip the video horizontally (default: False)
         """
-        super().__init__(camera_index=0)  # Index doesn't matter here
+        super().__init__(camera_index=0, horizontal_flip=horizontal_flip)  # Index doesn't matter here
         self.video_path = video_path
         self.loop = loop
         

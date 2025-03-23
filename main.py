@@ -38,7 +38,16 @@ def main():
     driver.get(url)
     logger.info(f"Opened webpage: {url}")
 
+    # Add a timestamp for the last extraction
+    last_extraction_time = time.time()
+
     product_regions = extract_amazon_product_regions(driver)
+    # In the main loop:
+    current_time = time.time()
+    if current_time - last_extraction_time > 5.0:  # Re-extract every 5 seconds
+        product_regions = extract_amazon_product_regions(driver)
+        last_extraction_time = current_time
+        
     logger.info(f"Extracted {len(product_regions)} potential products from Amazon.")
 
     eye_tracker = EyeTracker()
@@ -75,10 +84,17 @@ def main():
                 screen_point /= screen_point[2]
                 screen_x, screen_y = int(screen_point[0].item()), int(screen_point[1].item())
                 timestamp = time.time()
+                
+                scroll_y = driver.execute_script("return window.pageYOffset;")
+                scroll_x = driver.execute_script("return window.pageXOffset;")
+
+                # Adjust for scroll
+                adjusted_y = screen_y + scroll_y
+                adjusted_x = screen_x + scroll_x 
 
                 for product in product_regions:
                     left, top, right, bottom = product["bbox"]
-                    if left <= screen_x <= right and top <= screen_y <= bottom:
+                    if left <= adjusted_x <= right and top <= adjusted_y <= bottom:
                         product["total_attention_time"] = product.get("total_attention_time", 0) + 0.1
                         attention.attention_history.append({
                             "timestamp": timestamp,

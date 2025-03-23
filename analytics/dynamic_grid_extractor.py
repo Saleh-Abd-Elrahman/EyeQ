@@ -47,7 +47,13 @@ def extract_amazon_product_regions(driver):
                     fraction = el.find_element(By.CSS_SELECTOR, "span.a-price-fraction").text
                     price = float(f"{whole}.{fraction}")
                 except:
-                    price = 0.0
+                    # Try alternate format
+                    try:
+                        price_text = el.find_element(By.CSS_SELECTOR, "span.a-price").text
+                        # Clean and parse price_text
+                        price = float(price_text.replace("$", "").replace("€", "").replace(",", ".").strip())
+                    except:
+                        price = 0.0
 
                 # Categorize based on price
                 if price >= 1000:

@@ -28,7 +28,8 @@ class EyeTracker:
     def __init__(self, 
                  min_detection_confidence: float = 0.5, 
                  min_tracking_confidence: float = 0.5,
-                 max_num_faces: int = 1):
+                 max_num_faces: int = 1,
+                 invert_x_gaze: bool = False):
         """
         Initialize the eye tracker.
         
@@ -57,6 +58,7 @@ class EyeTracker:
         self.last_detection_time = 0
         self.frame_count = 0
         self.successful_detections = 0
+        self.invert_x_gaze = invert_x_gaze
         
         logger.info("Eye tracker initialized")
         
@@ -75,6 +77,9 @@ class EyeTracker:
                 "success": False,
                 "error": "Invalid frame input"
             }
+        if self.invert_x_gaze:
+            normalized_gaze[0] = -normalized_gaze[0]  # Invert X direction
+            
             
         self.frame_count += 1
         frame_height, frame_width, _ = frame.shape

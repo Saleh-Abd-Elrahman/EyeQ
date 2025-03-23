@@ -65,6 +65,12 @@ def main():
         help='Minimum face tracking confidence (default: 0.5)'
     )
     
+    parser.add_argument(
+        '--flip',
+        action='store_true',
+        help='Horizontally flip the camera input (useful for correcting mirrored webcams)'
+    )
+    
     args = parser.parse_args()
     
     try:
@@ -72,7 +78,8 @@ def main():
         camera = Camera(
             camera_index=args.camera,
             width=args.width,
-            height=args.height
+            height=args.height,
+            horizontal_flip=args.flip
         )
         
         if not camera.start():
@@ -99,7 +106,9 @@ def main():
         print("\n*** EYE TRACKING DEBUG TOOL ***")
         print("Press 'ESC' or 'q' to quit")
         print("Press 'm' to toggle face mesh visualization")
-        print("Press 's' to take a screenshot\n")
+        print("Press 'f' to toggle horizontal flip")
+        print("Press 's' to take a screenshot")
+        print(f"Camera horizontal flip: {'Enabled' if args.flip else 'Disabled'}\n")
         
         while running:
             # Read frame from camera
@@ -195,6 +204,9 @@ def main():
             elif key == ord('m'):  # Toggle face mesh
                 show_mesh = not show_mesh
                 logger.info(f"Face mesh visualization {'enabled' if show_mesh else 'disabled'}")
+            elif key == ord('f'):  # Toggle horizontal flip
+                camera.horizontal_flip = not camera.horizontal_flip
+                logger.info(f"Camera horizontal flip {'enabled' if camera.horizontal_flip else 'disabled'}")
             elif key == ord('s'):  # Take screenshot
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
                 os.makedirs("screenshots", exist_ok=True)
