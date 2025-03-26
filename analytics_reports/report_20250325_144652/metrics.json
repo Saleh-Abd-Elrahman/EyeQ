@@ -1,0 +1,90 @@
+{
+    "session_duration": 10.403680801391602,
+    "total_attention_time": 0.7999999999999999,
+    "product_count": 60,
+    "products_by_attention_time": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1099.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910404.93403
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1199.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910404.5358238
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 400.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910408.272513
+        },
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Budget (< 200\u20ac)",
+            "price": 166.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910398.001206
+        }
+    ],
+    "products_by_attention_count": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1099.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910404.93403
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1199.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910404.5358238
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 400.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910408.272513
+        },
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Budget (< 200\u20ac)",
+            "price": 166.0,
+            "total_attention_time": 0.2,
+            "attention_count": 2,
+            "last_attention_time": 1742910398.001206
+        }
+    ],
+    "attention_percentages": {
+        "product_1": 25.000000000000007,
+        "product_2": 25.000000000000007,
+        "product_3": 25.000000000000007,
+        "product_4": 25.000000000000007
+    },
+    "ignored_products": [],
+    "ignored_percentage": 0.0,
+    "timestamp": 1742910412.158043
+}

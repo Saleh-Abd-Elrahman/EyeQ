@@ -1,0 +1,1079 @@
+{
+    "session_duration": 0,
+    "total_attention_time": 0,
+    "product_count": 38,
+    "products_by_attention_time": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1099.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1199.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 400.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Budget (< 200\u20ac)",
+            "price": 166.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_5",
+            "name": "Product 5",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 206.5,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_6",
+            "name": "Product 6",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 231.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_7",
+            "name": "Product 7",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 256.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_9",
+            "name": "Product 9",
+            "category": "Budget (< 200\u20ac)",
+            "price": 198.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_10",
+            "name": "Product 10",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 279.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_11",
+            "name": "Product 11",
+            "category": "Budget (< 200\u20ac)",
+            "price": 171.41,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_12",
+            "name": "Product 12",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_13",
+            "name": "Product 13",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 289.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_14",
+            "name": "Product 14",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 389.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_15",
+            "name": "Product 15",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 219.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_16",
+            "name": "Product 16",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 254.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_17",
+            "name": "Product 17",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 329.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_18",
+            "name": "Product 18",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 359.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_19",
+            "name": "Product 19",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 285.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_20",
+            "name": "Product 20",
+            "category": "Budget (< 200\u20ac)",
+            "price": 169.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_21",
+            "name": "Product 21",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 297.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_22",
+            "name": "Product 22",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 227.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_23",
+            "name": "Product 23",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 246.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_24",
+            "name": "Product 24",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 238.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_25",
+            "name": "Product 25",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 209.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_26",
+            "name": "Product 26",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 849.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_27",
+            "name": "Product 27",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 223.28,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_28",
+            "name": "Product 28",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 339.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_29",
+            "name": "Product 29",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_30",
+            "name": "Product 30",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 419.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_31",
+            "name": "Product 31",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 649.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_32",
+            "name": "Product 32",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 589.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_33",
+            "name": "Product 33",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 359.98,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_34",
+            "name": "Product 34",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 299.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_35",
+            "name": "Product 35",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 285.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_36",
+            "name": "Product 36",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 375.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_37",
+            "name": "Product 37",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 899.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_38",
+            "name": "Product 38",
+            "category": "Price Unavailable",
+            "price": 0.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        }
+    ],
+    "products_by_attention_count": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1099.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1199.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 400.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Budget (< 200\u20ac)",
+            "price": 166.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_5",
+            "name": "Product 5",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 206.5,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_6",
+            "name": "Product 6",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 231.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_7",
+            "name": "Product 7",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 256.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_9",
+            "name": "Product 9",
+            "category": "Budget (< 200\u20ac)",
+            "price": 198.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_10",
+            "name": "Product 10",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 279.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_11",
+            "name": "Product 11",
+            "category": "Budget (< 200\u20ac)",
+            "price": 171.41,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_12",
+            "name": "Product 12",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_13",
+            "name": "Product 13",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 289.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_14",
+            "name": "Product 14",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 389.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_15",
+            "name": "Product 15",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 219.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_16",
+            "name": "Product 16",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 254.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_17",
+            "name": "Product 17",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 329.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_18",
+            "name": "Product 18",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 359.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_19",
+            "name": "Product 19",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 285.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_20",
+            "name": "Product 20",
+            "category": "Budget (< 200\u20ac)",
+            "price": 169.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_21",
+            "name": "Product 21",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 297.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_22",
+            "name": "Product 22",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 227.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_23",
+            "name": "Product 23",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 246.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_24",
+            "name": "Product 24",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 238.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_25",
+            "name": "Product 25",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 209.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_26",
+            "name": "Product 26",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 849.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_27",
+            "name": "Product 27",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 223.28,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_28",
+            "name": "Product 28",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 339.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_29",
+            "name": "Product 29",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_30",
+            "name": "Product 30",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 419.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_31",
+            "name": "Product 31",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 649.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_32",
+            "name": "Product 32",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 589.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_33",
+            "name": "Product 33",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 359.98,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_34",
+            "name": "Product 34",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 299.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_35",
+            "name": "Product 35",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 285.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_36",
+            "name": "Product 36",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 375.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_37",
+            "name": "Product 37",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 899.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_38",
+            "name": "Product 38",
+            "category": "Price Unavailable",
+            "price": 0.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        }
+    ],
+    "attention_percentages": {
+        "product_1": 0,
+        "product_2": 0,
+        "product_3": 0,
+        "product_4": 0,
+        "product_5": 0,
+        "product_6": 0,
+        "product_7": 0,
+        "product_8": 0,
+        "product_9": 0,
+        "product_10": 0,
+        "product_11": 0,
+        "product_12": 0,
+        "product_13": 0,
+        "product_14": 0,
+        "product_15": 0,
+        "product_16": 0,
+        "product_17": 0,
+        "product_18": 0,
+        "product_19": 0,
+        "product_20": 0,
+        "product_21": 0,
+        "product_22": 0,
+        "product_23": 0,
+        "product_24": 0,
+        "product_25": 0,
+        "product_26": 0,
+        "product_27": 0,
+        "product_28": 0,
+        "product_29": 0,
+        "product_30": 0,
+        "product_31": 0,
+        "product_32": 0,
+        "product_33": 0,
+        "product_34": 0,
+        "product_35": 0,
+        "product_36": 0,
+        "product_37": 0,
+        "product_38": 0
+    },
+    "ignored_products": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1099.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Premium (\u2265 1000\u20ac)",
+            "price": 1199.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 400.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Budget (< 200\u20ac)",
+            "price": 166.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_5",
+            "name": "Product 5",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 206.5,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_6",
+            "name": "Product 6",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 231.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_7",
+            "name": "Product 7",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 256.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_9",
+            "name": "Product 9",
+            "category": "Budget (< 200\u20ac)",
+            "price": 198.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_10",
+            "name": "Product 10",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 279.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_11",
+            "name": "Product 11",
+            "category": "Budget (< 200\u20ac)",
+            "price": 171.41,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_12",
+            "name": "Product 12",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_13",
+            "name": "Product 13",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 289.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_14",
+            "name": "Product 14",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 389.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_15",
+            "name": "Product 15",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 219.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_16",
+            "name": "Product 16",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 254.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_17",
+            "name": "Product 17",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 329.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_18",
+            "name": "Product 18",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 359.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_19",
+            "name": "Product 19",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 285.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_20",
+            "name": "Product 20",
+            "category": "Budget (< 200\u20ac)",
+            "price": 169.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_21",
+            "name": "Product 21",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 297.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_22",
+            "name": "Product 22",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 227.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_23",
+            "name": "Product 23",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 246.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_24",
+            "name": "Product 24",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 238.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_25",
+            "name": "Product 25",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 209.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_26",
+            "name": "Product 26",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 849.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_27",
+            "name": "Product 27",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 223.28,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_28",
+            "name": "Product 28",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 339.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_29",
+            "name": "Product 29",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_30",
+            "name": "Product 30",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 419.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_31",
+            "name": "Product 31",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 649.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_32",
+            "name": "Product 32",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 589.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_33",
+            "name": "Product 33",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 359.98,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_34",
+            "name": "Product 34",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 299.99,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_35",
+            "name": "Product 35",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 285.49,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_36",
+            "name": "Product 36",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 375.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_37",
+            "name": "Product 37",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 899.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        },
+        {
+            "id": "product_38",
+            "name": "Product 38",
+            "category": "Price Unavailable",
+            "price": 0.0,
+            "total_attention_time": 0,
+            "attention_count": 0,
+            "last_attention_time": 0
+        }
+    ],
+    "ignored_percentage": 100,
+    "timestamp": 1742910349.66093
+}
