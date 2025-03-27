@@ -7,22 +7,13 @@ import numpy as np
 import mediapipe as mp
 import time
 import logging
+import os
 from typing import Dict, List, Tuple, Optional, Any
-from dataclasses import dataclass, asdict
-from collections import deque
+from sklearn.decomposition import PCA
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-@dataclass
-class GazeQualityMetrics:
-    """Metrics for evaluating gaze tracking quality."""
-    vertical_stability: float = 0.0
-    vertical_range: float = 0.0
-    vertical_consistency: float = 0.0
-    head_angle: float = 0.0
-    confidence_score: float = 0.0
 
 class EyeTracker:
     """
@@ -36,23 +27,29 @@ class EyeTracker:
     LEFT_IRIS_INDICES = [474, 475, 476, 477]
     RIGHT_IRIS_INDICES = [469, 470, 471, 472]
     
+    # Upper and lower eyelid indices for vertical gaze tracking
+    LEFT_UPPER_EYELID = [386, 374, 373, 390, 388, 387]
+    LEFT_LOWER_EYELID = [263, 249, 390, 373, 374, 380]
+    RIGHT_UPPER_EYELID = [159, 145, 144, 163, 157, 158]
+    RIGHT_LOWER_EYELID = [133, 155, 154, 153, 145, 144]
+    
     def __init__(self, 
                  min_detection_confidence: float = 0.5, 
                  min_tracking_confidence: float = 0.5,
                  max_num_faces: int = 1,
-                 invert_x_gaze: bool = True,
-                 vertical_sensitivity: float = 1.5,
-                 smoothing_window: int = 5):
+                 invert_x_gaze: bool = False,
+                 use_vertical_ratio: bool = True,
+                 use_3d_pose: bool = True):
         """
         Initialize the eye tracker.
         
         Args:
-            min_detection_confidence: Minimum confidence for face detection
-            min_tracking_confidence: Minimum confidence for face tracking
-            max_num_faces: Maximum number of faces to track
-            invert_x_gaze: Whether to invert horizontal gaze direction
-            vertical_sensitivity: Sensitivity multiplier for vertical gaze
-            smoothing_window: Number of frames to use for gaze smoothing
+            min_detection_confidence: Minimum confidence for face detection (default: 0.5)
+            min_tracking_confidence: Minimum confidence for face tracking (default: 0.5)
+            max_num_faces: Maximum number of faces to track (default: 1)
+            invert_x_gaze: Whether to invert horizontal gaze direction (default: False)
+            use_vertical_ratio: Whether to use iris-to-eyelid ratio for vertical gaze (default: True)
+            use_3d_pose: Whether to use 3D eye pose estimation (default: True)
         """
         self.mp_face_mesh = mp.solutions.face_mesh
         self.mp_drawing = mp.solutions.drawing_utils
@@ -61,9 +58,6 @@ class EyeTracker:
         self.min_detection_confidence = min_detection_confidence
         self.min_tracking_confidence = min_tracking_confidence
         self.max_num_faces = max_num_faces
-        self.invert_x_gaze = invert_x_gaze
-        self.vertical_sensitivity = vertical_sensitivity
-        self.smoothing_window = smoothing_window
         
         self.face_mesh = self.mp_face_mesh.FaceMesh(
             static_image_mode=False,
@@ -73,25 +67,26 @@ class EyeTracker:
             min_tracking_confidence=min_tracking_confidence
         )
         
-        # Initialize frame dimensions
-        self.frame_width = 0
-        self.frame_height = 0
-        
-        # Initialize gaze tracking variables
         self.last_gaze_point = None
         self.last_detection_time = 0
         self.frame_count = 0
         self.successful_detections = 0
+        self.invert_x_gaze = invert_x_gaze
+        self.use_vertical_ratio = use_vertical_ratio
+        self.use_3d_pose = use_3d_pose
         
-        # Initialize gaze smoothing
-        self.gaze_history = deque(maxlen=smoothing_window)
-        self.vertical_history = deque(maxlen=smoothing_window)
+        # Calibration data
+        self.vertical_calibration = {
+            "points": [],
+            "ratios": [],
+            "is_calibrated": False
+        }
         
-        # Initialize quality metrics
-        self.quality_metrics = GazeQualityMetrics()
-        self.last_face_angle = None
+        # Default vertical adjustment parameters (will be updated during calibration)
+        self.vertical_scale = 1.5  # Higher value for more vertical movement
+        self.vertical_center = 0.5  # Center point for vertical ratio (0.5 = middle)
         
-        logger.info("Eye tracker initialized")
+        logger.info("Enhanced eye tracker initialized")
         
     def process_frame(self, frame: np.ndarray) -> Dict[str, Any]:
         """
@@ -109,10 +104,8 @@ class EyeTracker:
                 "error": "Invalid frame input"
             }
             
-        # Update frame dimensions
-        self.frame_height, self.frame_width, _ = frame.shape
-            
         self.frame_count += 1
+        frame_height, frame_width, _ = frame.shape
         
         # Convert the image to RGB for MediaPipe
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -125,8 +118,8 @@ class EyeTracker:
         # Prepare output dictionary
         output = {
             "success": False,
-            "frame_width": self.frame_width,
-            "frame_height": self.frame_height,
+            "frame_width": frame_width,
+            "frame_height": frame_height,
             "process_time_ms": process_time * 1000,
             "face_detected": False,
             "landmarks": None,
@@ -134,7 +127,8 @@ class EyeTracker:
             "right_eye": None,
             "gaze_point": None,
             "iris_landmarks": None,
-            "quality_metrics": None
+            "vertical_ratio": None,
+            "3d_gaze_vector": None
         }
         
         # Check if face detection was successful
@@ -149,7 +143,7 @@ class EyeTracker:
             
             # Convert landmarks to numpy array for easier processing
             landmarks_array = np.array([
-                [lm.x * self.frame_width, lm.y * self.frame_height, lm.z * self.frame_width]
+                [lm.x * frame_width, lm.y * frame_height, lm.z * frame_width]
                 for lm in face_landmarks.landmark
             ])
             
@@ -163,88 +157,85 @@ class EyeTracker:
             left_iris = landmarks_array[self.LEFT_IRIS_INDICES]
             right_iris = landmarks_array[self.RIGHT_IRIS_INDICES]
             
-            # Calculate eye centers and dimensions
+            # Calculate eye centers
             left_eye_center = np.mean(left_eye_landmarks[:, :2], axis=0)
             right_eye_center = np.mean(right_eye_landmarks[:, :2], axis=0)
-            
-            # Calculate eye dimensions for vertical ratio
-            left_eye_height = np.max(left_eye_landmarks[:, 1]) - np.min(left_eye_landmarks[:, 1])
-            right_eye_height = np.max(right_eye_landmarks[:, 1]) - np.min(right_eye_landmarks[:, 1])
             
             # Calculate iris centers
             left_iris_center = np.mean(left_iris[:, :2], axis=0)
             right_iris_center = np.mean(right_iris[:, :2], axis=0)
             
-            # Calculate face orientation
-            face_angle = self._calculate_face_angle(landmarks_array)
+            # ENHANCEMENT 1: Calculate iris-to-eyelid ratio for vertical gaze
+            vertical_ratio = None
+            if self.use_vertical_ratio:
+                vertical_ratio = self.calculate_vertical_gaze_ratio(landmarks_array, left_iris_center, right_iris_center)
+                output["vertical_ratio"] = vertical_ratio
             
-            # Calculate gaze vectors relative to eye centers
-            # Note: We swap x and y components to fix the axis mapping
-            left_eye_vector = np.array([
-                left_iris_center[1] - left_eye_center[1],  # Use y for horizontal
-                left_iris_center[0] - left_eye_center[0],  # Use x for vertical
-                0
-            ])
-            right_eye_vector = np.array([
-                right_iris_center[1] - right_eye_center[1],  # Use y for horizontal
-                right_iris_center[0] - right_eye_center[0],  # Use x for vertical
-                0
-            ])
+            # ENHANCEMENT 2: Calculate 3D eye pose for improved gaze estimation
+            gaze_vector_3d = None
+            if self.use_3d_pose:
+                gaze_vector_3d = self.estimate_3d_gaze(landmarks_array)
+                output["3d_gaze_vector"] = gaze_vector_3d.tolist()
             
-            # Calculate vertical ratios
-            left_vertical_ratio = (left_iris_center[0] - left_eye_center[0]) / left_eye_height
-            right_vertical_ratio = (right_iris_center[0] - right_eye_center[0]) / right_eye_height
+            # Use iris position to estimate gaze direction
+            left_eye_vector = left_iris_center - left_eye_center
+            right_eye_vector = right_iris_center - right_eye_center
             
             # Average the two eye vectors for the final gaze vector
             gaze_vector = (left_eye_vector + right_eye_vector) / 2
             
-            # Normalize the gaze vector
+            # Normalize and scale the gaze vector
             gaze_magnitude = np.linalg.norm(gaze_vector)
             if gaze_magnitude > 0:
-                gaze_vector = gaze_vector / gaze_magnitude
+                normalized_gaze = gaze_vector / gaze_magnitude
+            else:
+                normalized_gaze = gaze_vector
             
-            # Apply vertical sensitivity adjustment
-            gaze_vector[1] *= self.vertical_sensitivity
+            # Apply horizontal gaze inversion if configured
+            if self.invert_x_gaze:
+                normalized_gaze[0] = -normalized_gaze[0]
+                
+            # Adjust vertical gaze component if using vertical ratio
+            if vertical_ratio is not None:
+                # Scale vertical gaze based on the iris-to-eyelid ratio
+                vertical_offset = (vertical_ratio - self.vertical_center) * self.vertical_scale
+                normalized_gaze[1] = vertical_offset
             
-            # Compensate for head position
-            gaze_vector = self._compensate_head_position(gaze_vector, face_angle)
+            # If using 3D pose estimation, incorporate it into the gaze vector
+            if gaze_vector_3d is not None:
+                # Scale to match 2D vector and blend them
+                normalized_gaze = 0.7 * normalized_gaze + 0.3 * gaze_vector_3d[:2]
+                # Re-normalize
+                gaze_magnitude = np.linalg.norm(normalized_gaze)
+                if gaze_magnitude > 0:
+                    normalized_gaze = normalized_gaze / gaze_magnitude
             
             # Estimate gaze point on the frame
             gaze_scale = 200  # Arbitrary scale factor, would be calibrated in real use
-            center_point = np.array([self.frame_width/2, self.frame_height/2])
-            
-            # Map gaze vector to screen coordinates
-            # Invert X direction if needed
-            if self.invert_x_gaze:
-                gaze_vector[0] = -gaze_vector[0]
-                
-            # Note: We swap x and y back for screen coordinates
-            gaze_point = center_point + np.array([gaze_vector[0], gaze_vector[1]]) * gaze_scale
+            center_point = np.array([frame_width/2, frame_height/2])
+            gaze_point = center_point + normalized_gaze * gaze_scale
             
             # Ensure gaze point is within frame boundaries
-            gaze_point[0] = max(0, min(self.frame_width, gaze_point[0]))
-            gaze_point[1] = max(0, min(self.frame_height, gaze_point[1]))
+            gaze_point[0] = max(0, min(frame_width, gaze_point[0]))
+            gaze_point[1] = max(0, min(frame_height, gaze_point[1]))
             
-            # Apply smoothing
-            gaze_point = self._smooth_gaze(gaze_point)
-            
-            # Calculate quality metrics
-            quality_metrics = self._calculate_gaze_quality(gaze_point, face_angle)
-            output["quality_metrics"] = quality_metrics
+            # Apply some smoothing with previous gaze points
+            if self.last_gaze_point is not None:
+                # Simple exponential smoothing
+                alpha = 0.3  # Smoothing factor (0 = no smoothing, 1 = no filtering)
+                gaze_point = alpha * gaze_point + (1 - alpha) * self.last_gaze_point
+                
+            self.last_gaze_point = gaze_point
             
             # Store eye and gaze information in output dictionary
             output["left_eye"] = {
                 "center": left_eye_center.tolist(),
-                "landmarks": left_eye_landmarks.tolist(),
-                "height": float(left_eye_height),
-                "vertical_ratio": float(left_vertical_ratio)
+                "landmarks": left_eye_landmarks.tolist()
             }
             
             output["right_eye"] = {
                 "center": right_eye_center.tolist(),
-                "landmarks": right_eye_landmarks.tolist(),
-                "height": float(right_eye_height),
-                "vertical_ratio": float(right_vertical_ratio)
+                "landmarks": right_eye_landmarks.tolist()
             }
             
             output["iris_landmarks"] = {
@@ -261,109 +252,119 @@ class EyeTracker:
             # If we haven't seen a face for a while, reset the last gaze point
             if time.time() - self.last_detection_time > 1.0:
                 self.last_gaze_point = None
-                self.gaze_history.clear()
-                self.vertical_history.clear()
                 
         # Calculate detection rate
         output["detection_rate"] = self.successful_detections / self.frame_count if self.frame_count > 0 else 0
         
         return output
     
-    def _calculate_face_angle(self, landmarks: np.ndarray) -> float:
-        """Calculate the face angle from landmarks."""
-        # Use nose and eyes to estimate face angle
-        nose_tip = landmarks[5]  # Nose tip landmark
-        left_eye = np.mean(landmarks[self.LEFT_EYE_INDICES], axis=0)
-        right_eye = np.mean(landmarks[self.RIGHT_EYE_INDICES], axis=0)
-        
-        # Calculate angle between eyes and nose
-        eye_center = (left_eye + right_eye) / 2
-        face_vector = nose_tip - eye_center
-        face_angle = np.arctan2(face_vector[1], face_vector[0])
-        
-        return face_angle
-    
-    def _compensate_head_position(self, gaze_vector: np.ndarray, face_angle: float) -> np.ndarray:
+    def calculate_vertical_gaze_ratio(self, landmarks_array, left_iris_center, right_iris_center):
         """
-        Compensate gaze vector for head position.
+        Calculate the vertical gaze ratio based on iris position relative to eyelids.
         
         Args:
-            gaze_vector: 3D gaze vector (x, y, z)
-            face_angle: Face angle in radians
+            landmarks_array: All face landmarks
+            left_iris_center: Center coordinates of left iris
+            right_iris_center: Center coordinates of right iris
             
         Returns:
-            Compensated 3D gaze vector
+            Vertical ratio value (0-1 range where 0.5 is center)
         """
-        # Ensure gaze_vector is 3D
-        if len(gaze_vector) == 2:
-            gaze_vector = np.append(gaze_vector, 0.0)
+        try:
+            # Get upper and lower eyelid y-positions for left eye
+            left_upper_points = landmarks_array[self.LEFT_UPPER_EYELID]
+            left_lower_points = landmarks_array[self.LEFT_LOWER_EYELID]
             
-        # Create rotation matrix for compensation
-        # Note: We only rotate around the Z axis (yaw) for head position compensation
-        compensation_matrix = np.array([
-            [np.cos(face_angle), -np.sin(face_angle), 0],
-            [np.sin(face_angle), np.cos(face_angle), 0],
-            [0, 0, 1]
-        ])
-        
-        # Apply compensation
-        compensated_vector = compensation_matrix @ gaze_vector
-        
-        # Normalize the compensated vector
-        magnitude = np.linalg.norm(compensated_vector)
-        if magnitude > 0:
-            compensated_vector = compensated_vector / magnitude
+            left_upper_y = np.mean(left_upper_points[:, 1])
+            left_lower_y = np.mean(left_lower_points[:, 1])
+            left_iris_y = left_iris_center[1]
             
-        return compensated_vector
+            # Calculate normalized position of iris between eyelids for left eye
+            left_vertical_ratio = (left_iris_y - left_upper_y) / (left_lower_y - left_upper_y)
+            
+            # Do the same for right eye
+            right_upper_points = landmarks_array[self.RIGHT_UPPER_EYELID]
+            right_lower_points = landmarks_array[self.RIGHT_LOWER_EYELID]
+            
+            right_upper_y = np.mean(right_upper_points[:, 1])
+            right_lower_y = np.mean(right_lower_points[:, 1])
+            right_iris_y = right_iris_center[1]
+            
+            right_vertical_ratio = (right_iris_y - right_upper_y) / (right_lower_y - right_upper_y)
+            
+            # Average the two ratios for more stability
+            vertical_ratio = (left_vertical_ratio + right_vertical_ratio) / 2
+            
+            # Ensure the ratio is within the 0-1 range
+            vertical_ratio = max(0.0, min(1.0, vertical_ratio))
+            
+            return vertical_ratio
+            
+        except Exception as e:
+            logger.warning(f"Error calculating vertical gaze ratio: {e}")
+            return 0.5  # Default to center
     
-    def _smooth_gaze(self, gaze_point: np.ndarray) -> np.ndarray:
-        """Apply smoothing to gaze point."""
-        self.gaze_history.append(gaze_point)
-        
-        if len(self.gaze_history) < 2:
-            return gaze_point
-            
-        # Apply weighted moving average
-        weights = np.linspace(0.1, 0.3, len(self.gaze_history))
-        weights = weights / np.sum(weights)
-        
-        smoothed_point = np.average(self.gaze_history, weights=weights, axis=0)
-        return smoothed_point
-    
-    def _calculate_gaze_quality(self, gaze_point: np.ndarray, face_angle: float) -> Dict[str, float]:
+    def estimate_3d_gaze(self, landmarks_array):
         """
-        Calculate quality metrics for gaze tracking.
+        Estimate 3D gaze direction using PCA on eye landmarks.
         
         Args:
-            gaze_point: Current gaze point coordinates
-            face_angle: Current face angle
+            landmarks_array: All face landmarks
             
         Returns:
-            Dictionary of quality metrics
+            3D normalized gaze vector
         """
-        metrics = GazeQualityMetrics()
-        
-        # Calculate vertical stability
-        if len(self.vertical_history) > 1:
-            vertical_std = np.std(self.vertical_history)
-            metrics.vertical_stability = 1.0 / (1.0 + vertical_std)
-        
-        # Calculate vertical range
-        if self.frame_height > 0:
-            metrics.vertical_range = min(1.0, 
-                abs(gaze_point[1] - self.frame_height/2) / (self.frame_height/2))
-        
-        # Calculate head angle influence
-        metrics.head_angle = abs(face_angle)
-        
-        # Calculate overall confidence score
-        metrics.confidence_score = (
-            metrics.vertical_stability * 0.4 +
-            metrics.vertical_range * 0.3 +
-            (1.0 - min(metrics.head_angle / np.pi, 1.0)) * 0.3
-        )
-        
-        return asdict(metrics)
+        try:
+            # Extract 3D eye landmarks
+            left_eye_3d = landmarks_array[self.LEFT_EYE_INDICES]
+            right_eye_3d = landmarks_array[self.RIGHT_EYE_INDICES]
+            
+            # Calculate iris centers in 3D
+            left_iris_3d = np.mean(landmarks_array[self.LEFT_IRIS_INDICES], axis=0)
+            right_iris_3d = np.mean(landmarks_array[self.RIGHT_IRIS_INDICES], axis=0)
+            
+            # Calculate eye centers in 3D
+            left_eye_center_3d = np.mean(left_eye_3d, axis=0)
+            right_eye_center_3d = np.mean(right_eye_3d, axis=0)
+            
+            # Calculate eye normal vectors using PCA
+            left_pca = PCA(n_components=3)
+            left_pca.fit(left_eye_3d)
+            left_normal = left_pca.components_[2]  # Third component is normal to the eye plane
+            
+            right_pca = PCA(n_components=3)
+            right_pca.fit(right_eye_3d)
+            right_normal = right_pca.components_[2]
+            
+            # Ensure normal vectors point forward (towards negative z)
+            if left_normal[2] > 0:
+                left_normal = -left_normal
+            if right_normal[2] > 0:
+                right_normal = -right_normal
+            
+            # Calculate 3D gaze vectors (from eye center to iris)
+            left_gaze_3d = left_iris_3d - left_eye_center_3d
+            right_gaze_3d = right_iris_3d - right_eye_center_3d
+            
+            # Project gaze vectors onto the eye plane
+            left_gaze_proj = left_gaze_3d - np.dot(left_gaze_3d, left_normal) * left_normal
+            right_gaze_proj = right_gaze_3d - np.dot(right_gaze_3d, right_normal) * right_normal
+            
+            # Average the projected gaze vectors
+            gaze_3d = (left_gaze_proj + right_gaze_proj) / 2
+            
+            # Normalize
+            gaze_3d_magnitude = np.linalg.norm(gaze_3d)
+            if gaze_3d_magnitude > 0:
+                gaze_3d_normalized = gaze_3d / gaze_3d_magnitude
+            else:
+                gaze_3d_normalized = np.array([0.0, 0.0, -1.0])  # Default to looking forward
+                
+            return gaze_3d_normalized
+            
+        except Exception as e:
+            logger.warning(f"Error estimating 3D gaze: {e}")
+            return np.array([0.0, 0.0, -1.0])  # Default to looking forward
     
     def visualize(self, frame: np.ndarray, result: Dict[str, Any], 
                   show_mesh: bool = False, 
@@ -386,7 +387,7 @@ class EyeTracker:
         annotated_frame = frame.copy()
         
         if show_mesh and "landmarks" in result and result["landmarks"] is not None:
-            landmark_list = self.landmarks_to_proto(result["landmarks"], self.frame_width, self.frame_height)
+            landmark_list = self.landmarks_to_proto(result["landmarks"], frame.shape[1], frame.shape[0])
             self.mp_drawing.draw_landmarks(
                 image=annotated_frame,
                 landmark_list=landmark_list,
@@ -432,19 +433,19 @@ class EyeTracker:
                 eye_center = ((left_center[0] + right_center[0]) // 2, 
                               (left_center[1] + right_center[1]) // 2)
                 cv2.line(annotated_frame, eye_center, gaze_point, (255, 0, 0), 2)
-                
-            # Draw quality metrics if available
-            if "quality_metrics" in result:
-                metrics = result["quality_metrics"]
-                cv2.putText(
-                    annotated_frame,
-                    f"Quality: {metrics['confidence_score']:.2f}",
-                    (20, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.7,
-                    (0, 255, 0) if metrics['confidence_score'] > 0.7 else (0, 165, 255),
-                    2
-                )
+        
+        # Display vertical gaze ratio if available
+        if "vertical_ratio" in result and result["vertical_ratio"] is not None:
+            vertical_ratio = result["vertical_ratio"]
+            cv2.putText(
+                annotated_frame,
+                f"V-Ratio: {vertical_ratio:.2f}",
+                (20, 60),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (255, 165, 0),
+                2
+            )
         
         return annotated_frame
     
@@ -472,14 +473,122 @@ class EyeTracker:
             landmark_proto.z = z / width
             
         return landmark_list
+        
+    def perform_vertical_calibration(self, screen_points, vertical_ratios):
+        """
+        Calibrate vertical gaze tracking with collected data points.
+        
+        Args:
+            screen_points: List of y-coordinates of calibration points on screen
+            vertical_ratios: List of measured vertical ratios for each point
+            
+        Returns:
+            True if calibration was successful, False otherwise
+        """
+        if len(screen_points) < 2 or len(vertical_ratios) < 2:
+            logger.warning("Not enough calibration points for vertical calibration")
+            return False
+            
+        try:
+            # Find the center point (ratio that corresponds to looking at the center)
+            # Assuming screen_points are normalized to 0-1 range
+            center_index = np.argmin(np.abs(np.array(screen_points) - 0.5))
+            self.vertical_center = vertical_ratios[center_index]
+            
+            # Calculate vertical scale factor
+            # Find points looking at top and bottom
+            top_index = np.argmin(screen_points)
+            bottom_index = np.argmax(screen_points)
+            
+            top_ratio = vertical_ratios[top_index]
+            bottom_ratio = vertical_ratios[bottom_index]
+            
+            # Calculate scale factor
+            if abs(bottom_ratio - top_ratio) > 0.01:  # Avoid division by near-zero
+                # Scale to map the ratio difference to full vertical range
+                self.vertical_scale = 1.0 / (bottom_ratio - top_ratio)
+            else:
+                # Default if the difference is too small
+                self.vertical_scale = 2.0
+                
+            logger.info(f"Vertical calibration complete: center={self.vertical_center:.2f}, scale={self.vertical_scale:.2f}")
+            
+            # Store calibration data
+            self.vertical_calibration["points"] = screen_points
+            self.vertical_calibration["ratios"] = vertical_ratios
+            self.vertical_calibration["is_calibrated"] = True
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error during vertical calibration: {e}")
+            return False
+            
+    def save_calibration(self, filepath):
+        """
+        Save calibration data to a file.
+        
+        Args:
+            filepath: Path to save the calibration data
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            calibration_data = {
+                "vertical_center": self.vertical_center,
+                "vertical_scale": self.vertical_scale,
+                "vertical_points": self.vertical_calibration["points"],
+                "vertical_ratios": self.vertical_calibration["ratios"],
+                "is_calibrated": self.vertical_calibration["is_calibrated"]
+            }
+            
+            np.save(filepath, calibration_data)
+            logger.info(f"Calibration data saved to {filepath}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error saving calibration data: {e}")
+            return False
+            
+    def load_calibration(self, filepath):
+        """
+        Load calibration data from a file.
+        
+        Args:
+            filepath: Path to load the calibration data from
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not os.path.exists(filepath):
+                logger.warning(f"Calibration file not found: {filepath}")
+                return False
+                
+            calibration_data = np.load(filepath, allow_pickle=True).item()
+            
+            self.vertical_center = calibration_data.get("vertical_center", 0.5)
+            self.vertical_scale = calibration_data.get("vertical_scale", 1.5)
+            
+            self.vertical_calibration["points"] = calibration_data.get("vertical_points", [])
+            self.vertical_calibration["ratios"] = calibration_data.get("vertical_ratios", [])
+            self.vertical_calibration["is_calibrated"] = calibration_data.get("is_calibrated", False)
+            
+            logger.info(f"Calibration data loaded from {filepath}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error loading calibration data: {e}")
+            return False
     
     def __del__(self):
         """
         Clean up resources.
         """
         try:
-            if hasattr(self, 'face_mesh') and self.face_mesh is not None:
+            if hasattr(self, 'face_mesh'):
                 self.face_mesh.close()
-            logger.info("Eye tracker resources released")
+                logger.info("Face mesh resources released")
         except Exception as e:
-            logger.warning(f"Error cleaning up eye tracker resources: {e}")
+            logger.warning(f"Error closing face mesh: {e}")

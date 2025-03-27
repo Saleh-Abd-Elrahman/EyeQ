@@ -71,6 +71,25 @@ def main():
         help='Horizontally flip the camera input (useful for correcting mirrored webcams)'
     )
     
+    parser.add_argument(
+        '--enhanced-vertical',
+        action='store_true',
+        help='Use enhanced vertical gaze tracking (uses iris-to-eyelid ratio)'
+    )
+    
+    parser.add_argument(
+        '--use-3d-pose',
+        action='store_true',
+        help='Use 3D eye pose estimation for improved gaze tracking'
+    )
+    
+    parser.add_argument(
+        '--vertical-calibration',
+        type=str,
+        default='vertical_calibration.npy',
+        help='Path to vertical calibration file (default: vertical_calibration.npy)'
+    )
+    
     args = parser.parse_args()
     
     try:
@@ -86,11 +105,19 @@ def main():
             logger.error("Failed to start camera")
             return 1
         
-        # Initialize eye tracker with provided confidence values
+        # Initialize eye tracker with provided confidence values and enhanced options
         eye_tracker = EyeTracker(
             min_detection_confidence=args.detection_confidence,
-            min_tracking_confidence=args.tracking_confidence
+            min_tracking_confidence=args.tracking_confidence,
+            invert_x_gaze=False,  # We handle this with camera flip now
+            use_vertical_ratio=args.enhanced_vertical,
+            use_3d_pose=args.use_3d_pose
         )
+        
+        # Load vertical calibration if requested and file exists
+        if args.enhanced_vertical and os.path.exists(args.vertical_calibration):
+            logger.info(f"Loading vertical calibration from {args.vertical_calibration}")
+            eye_tracker.load_calibration(args.vertical_calibration)
         
         # Create display window
         cv2.namedWindow('Eye Tracking Debug', cv2.WINDOW_NORMAL)
@@ -102,13 +129,17 @@ def main():
         fps = 0
         running = True
         show_mesh = False
+        show_metrics = True
         
         print("\n*** EYE TRACKING DEBUG TOOL ***")
         print("Press 'ESC' or 'q' to quit")
         print("Press 'm' to toggle face mesh visualization")
         print("Press 'f' to toggle horizontal flip")
+        print("Press 'd' to toggle detailed metrics display")
         print("Press 's' to take a screenshot")
-        print(f"Camera horizontal flip: {'Enabled' if args.flip else 'Disabled'}\n")
+        print(f"Camera horizontal flip: {'Enabled' if args.flip else 'Disabled'}")
+        print(f"Enhanced vertical tracking: {'Enabled' if args.enhanced_vertical else 'Disabled'}")
+        print(f"3D pose estimation: {'Enabled' if args.use_3d_pose else 'Disabled'}\n")
         
         while running:
             # Read frame from camera
@@ -159,13 +190,51 @@ def main():
                     (0, 255, 0),
                     2
                 )
+                
+                # Display vertical ratio if available and metrics are enabled
+                if show_metrics and "vertical_ratio" in result and result["vertical_ratio"] is not None:
+                    vertical_ratio = result["vertical_ratio"]
+                    cv2.putText(
+                        debug_frame,
+                        f"Vertical Ratio: {vertical_ratio:.3f}",
+                        (20, 120),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7,
+                        (255, 165, 0),
+                        2
+                    )
+                    
+                    # Add a visual indicator for vertical ratio
+                    bar_x = 250
+                    bar_y = 125
+                    bar_width = 100
+                    bar_height = 15
+                    # Draw background bar
+                    cv2.rectangle(debug_frame, (bar_x, bar_y-bar_height), (bar_x+bar_width, bar_y), (50, 50, 50), -1)
+                    # Draw filled portion representing the ratio
+                    filled_width = int(vertical_ratio * bar_width)
+                    cv2.rectangle(debug_frame, (bar_x, bar_y-bar_height), (bar_x+filled_width, bar_y), (255, 165, 0), -1)
+                
+                # Display 3D gaze vector if available and metrics are enabled
+                if show_metrics and "3d_gaze_vector" in result and result["3d_gaze_vector"] is not None:
+                    gaze_3d = result["3d_gaze_vector"]
+                    cv2.putText(
+                        debug_frame,
+                        f"3D Gaze: ({gaze_3d[0]:.2f}, {gaze_3d[1]:.2f}, {gaze_3d[2]:.2f})",
+                        (20, 150),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.7,
+                        (128, 0, 255),
+                        2
+                    )
             
             # Display detection rate
             detection_rate = result.get("detection_rate", 0)
+            y_pos = 150 if not show_metrics or "3d_gaze_vector" not in result else 180
             cv2.putText(
                 debug_frame,
                 f"Detection Rate: {detection_rate:.2f}",
-                (20, 120),
+                (20, y_pos),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
                 (255, 165, 0),
@@ -184,7 +253,7 @@ def main():
             cv2.putText(
                 debug_frame,
                 f"FPS: {fps:.2f}",
-                (20, 150),
+                (20, y_pos + 30),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
                 (255, 165, 0),
@@ -207,6 +276,9 @@ def main():
             elif key == ord('f'):  # Toggle horizontal flip
                 camera.horizontal_flip = not camera.horizontal_flip
                 logger.info(f"Camera horizontal flip {'enabled' if camera.horizontal_flip else 'disabled'}")
+            elif key == ord('d'):  # Toggle detailed metrics
+                show_metrics = not show_metrics
+                logger.info(f"Detailed metrics display {'enabled' if show_metrics else 'disabled'}")
             elif key == ord('s'):  # Take screenshot
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
                 os.makedirs("screenshots", exist_ok=True)

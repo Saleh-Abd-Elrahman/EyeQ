@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import time
 import os
+import argparse
 from models.eye_tracking_model import EyeTracker
 from utils.camera import Camera
 
@@ -27,214 +28,348 @@ def draw_calibration_point(image, point, size=20, color=(0, 255, 0), thickness=-
     cv2.circle(image, point, size//4, (255, 255, 255), -1)
     return image
 
-def perform_calibration():
-    """Perform eye tracking calibration with visual UI."""
-    # Get screen resolution - default to 1920x1080 if detection fails
-    try:
-        from screeninfo import get_monitors
-        monitor = get_monitors()[0]
-        screen_width, screen_height = monitor.width, monitor.height
-    except:
-        screen_width, screen_height = 1920, 1080
-        print("Warning: Could not detect screen resolution, using default 1920x1080")
+def perform_standard_calibration():
+    """Perform standard homography-based calibration for screen mapping."""
+    print("\n*** STANDARD CALIBRATION (HOMOGRAPHY) ***")
+    print("This calibration maps your gaze to screen coordinates.")
+    print("Look at each calibration point when instructed.")
     
-    # Create calibration window
-    background, window_name = create_calibration_window(screen_width, screen_height)
-    
-    # Create camera preview window
-    camera_window = "Camera Preview"
-    cv2.namedWindow(camera_window, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(camera_window, 480, 270)  # Smaller window for camera feed
-    
-    # Initialize eye tracker and camera
     eye_tracker = EyeTracker()
-    camera = Camera(horizontal_flip=True)  # Apply horizontal flip for more intuitive experience
-    
+    camera = Camera()
     if not camera.start():
         print("Camera initialization failed!")
-        cv2.destroyAllWindows()
         return
 
-    # Calibration instructions screen
-    instructions = background.copy()
-    add_text(instructions, "EYE TRACKING CALIBRATION", (screen_width//2 - 400, screen_height//2 - 200), 1.5, (0, 255, 0), 3)
-    add_text(instructions, "Instructions:", (screen_width//2 - 350, screen_height//2 - 100), 1, (255, 255, 255), 2)
-    add_text(instructions, "1. Follow the green circle with your eyes only", (screen_width//2 - 350, screen_height//2 - 50), 1, (255, 255, 255), 2)
-    add_text(instructions, "2. Keep your head relatively still", (screen_width//2 - 350, screen_height//2), 1, (255, 255, 255), 2)
-    add_text(instructions, "3. The circle will turn blue when collecting data", (screen_width//2 - 350, screen_height//2 + 50), 1, (255, 255, 255), 2)
-    add_text(instructions, "4. The calibration will proceed automatically", (screen_width//2 - 350, screen_height//2 + 100), 1, (255, 255, 255), 2)
-    add_text(instructions, "Press SPACEBAR to begin calibration", (screen_width//2 - 350, screen_height//2 + 200), 1.2, (0, 255, 255), 2)
-    
-    # Display instruction screen
-    cv2.imshow(window_name, instructions)
-    
-    # Wait for spacebar to start
-    key = cv2.waitKey(0)
-    if key != 32:  # 32 is spacebar
-        print("Calibration cancelled.")
-        camera.stop()
-        cv2.destroyAllWindows()
-        return
-    
-    # Define calibration points - adjust based on screen resolution
-    x_margin = int(screen_width * 0.1)
-    y_margin = int(screen_height * 0.1)
-    x_positions = [x_margin, screen_width // 2, screen_width - x_margin]
-    y_positions = [y_margin, screen_height // 2, screen_height - y_margin]
-    
-    calibration_screen_points = []
-    for y in y_positions:
-        for x in x_positions:
-            calibration_screen_points.append((x, y))
-    
     screen_points = []
     gaze_points = []
+
+    # Define calibration points on the screen (4 corners and center)
+    calibration_screen_points = [
+        (100, 100),       # top-left
+        (1820, 100),      # top-right (assuming 1920x1080 screen)
+        (1820, 980),      # bottom-right
+        (100, 980),       # bottom-left
+        (960, 540),       # center
+    ]
+
+    # Create a window for calibration
+    cv2.namedWindow("Calibration", cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty("Calibration", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     
-    # Start calibration process
-    for i, screen_point in enumerate(calibration_screen_points):
-        # Prepare the frame with only the current calibration point
-        calibration_frame = background.copy()
-        progress_text = f"Point {i+1}/{len(calibration_screen_points)}"
-        add_text(calibration_frame, progress_text, (50, 50), 0.8, (255, 255, 255), 2)
-        draw_calibration_point(calibration_frame, screen_point)
+    calibration_image = np.zeros((1080, 1920, 3), dtype=np.uint8)
+
+    for point_idx, screen_point in enumerate(calibration_screen_points):
+        # Draw current calibration point
+        calibration_image.fill(0)
+        cv2.circle(calibration_image, screen_point, 30, (0, 255, 0), -1)
+        cv2.putText(calibration_image, f"Point {point_idx+1}/{len(calibration_screen_points)}", 
+                   (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.imshow("Calibration", calibration_image)
+        cv2.waitKey(1)
         
-        # Show the point for 1 second before collecting data
-        cv2.imshow(window_name, calibration_frame)
+        print(f"\nLook at the green dot (Point {point_idx+1})")
+        time.sleep(1)  # Give user time to focus
         
-        # Show camera preview with detected face for feedback
-        start_preview_time = time.time()
-        while time.time() - start_preview_time < 1.5:
-            success, frame = camera.read()
-            if success:
-                # Just show raw frame for preview
-                cv2.imshow(camera_window, frame)
-            key = cv2.waitKey(1)
-            if key == 27:  # ESC key
-                print("Calibration cancelled.")
-                camera.stop()
-                cv2.destroyAllWindows()
-                return
+        # Countdown
+        for i in range(3, 0, -1):
+            print(f"Collecting in {i}...")
+            time.sleep(1)
         
-        # Prepare for data collection
+        print("Collecting... Keep looking at the green dot!")
+
         frames_collected = 0
         gaze_collected = []
-        
-        # Change point color to indicate data collection
-        collecting_frame = background.copy()
-        add_text(collecting_frame, progress_text, (50, 50), 0.8, (255, 255, 255), 2)
-        add_text(collecting_frame, "Collecting data...", (50, 90), 0.7, (0, 255, 255), 2)
-        draw_calibration_point(collecting_frame, screen_point, color=(0, 0, 255))  # Blue during collection
-        cv2.imshow(window_name, collecting_frame)
-        
-        collection_start_time = time.time()
-        target_frames = 15  # Number of frames to collect
-        
-        # Main collection loop
-        while frames_collected < target_frames:
+
+        while frames_collected < 30:
             success, frame = camera.read()
             if not success or frame is None:
                 continue
-            
-            # Process frame for eye tracking
+
             result = eye_tracker.process_frame(frame)
-            
-            # Show the processed frame with eye tracking visualization
-            vis_frame = eye_tracker.visualize(frame, result, show_gaze=True)
-            
-            # Update progress bar
-            progress = int(50 * frames_collected / target_frames)
-            cv2.rectangle(vis_frame, (10, 30), (10 + progress, 40), (0, 255, 0), -1)
-            add_text(vis_frame, f"Collecting: {frames_collected}/{target_frames}", (10, 20), 0.5, (255, 255, 255), 1)
-            
-            cv2.imshow(camera_window, vis_frame)
-            
-            # Check if we detected gaze
             gaze_point = result.get("gaze_point")
             if gaze_point:
                 gaze_collected.append(gaze_point)
                 frames_collected += 1
-                
-                # Update the collecting frame with progress
-                progress_frame = collecting_frame.copy()
-                progress_percentage = int(100 * frames_collected / target_frames)
-                add_text(progress_frame, f"Progress: {progress_percentage}%", (50, 130), 0.7, (0, 255, 255), 2)
-                cv2.imshow(window_name, progress_frame)
-            
-            # Check for cancel
+                print(f"Collected {frames_collected}/30 samples", end="\r")
+
+            # Show the camera view with tracking visualization
+            vis_frame = eye_tracker.visualize(frame, result)
+            vis_frame_resized = cv2.resize(vis_frame, (640, 360))
+            cv2.imshow("Camera Feed", vis_frame_resized)
             key = cv2.waitKey(1)
             if key == 27:  # ESC key
-                print("Calibration cancelled.")
-                camera.stop()
                 cv2.destroyAllWindows()
+                camera.stop()
                 return
-                
+
             time.sleep(0.05)
-            
-            # Timeout if taking too long
-            if time.time() - collection_start_time > 10:  # 10 second timeout
-                if frames_collected > 5:  # Accept if we have at least 5 frames
-                    break
-                else:
-                    print(f"Warning: Timeout collecting data for point {i+1}, retrying...")
-                    collection_start_time = time.time()  # Reset timer and try again
+
+        # Take average gaze point for stability
+        avg_gaze = np.mean(gaze_collected, axis=0)
+        gaze_points.append(avg_gaze)
+        screen_points.append(screen_point)
         
-        # Show success indication
-        success_frame = background.copy()
-        add_text(success_frame, progress_text, (50, 50), 0.8, (255, 255, 255), 2)
-        add_text(success_frame, "Point completed!", (50, 90), 0.7, (0, 255, 0), 2)
-        draw_calibration_point(success_frame, screen_point, color=(0, 255, 0))  # Green again
-        cv2.imshow(window_name, success_frame)
-        cv2.waitKey(300)  # Short delay to show success
-        
-        # Calculate average gaze point
-        if len(gaze_collected) > 0:
-            avg_gaze = np.mean(gaze_collected, axis=0)
-            gaze_points.append(avg_gaze)
-            screen_points.append(screen_point)
-            print(f"Completed point {i+1}: {screen_point}")
-        else:
-            print(f"Failed to collect data for point {i+1}")
-    
-    # Final cleanup
+        print(f"\nPoint {point_idx+1} complete: {avg_gaze}")
+
+    # Close visualization windows
+    cv2.destroyAllWindows()
     camera.stop()
-    eye_tracker.__del__()
-    
-    # If we haven't collected enough points, show an error
-    if len(gaze_points) < 4:
-        error_screen = background.copy()
-        add_text(error_screen, "CALIBRATION FAILED", (screen_width//2 - 300, screen_height//2 - 50), 1.5, (0, 0, 255), 3)
-        add_text(error_screen, "Not enough data points collected.", (screen_width//2 - 300, screen_height//2 + 50), 1, (255, 255, 255), 2)
-        add_text(error_screen, "Please try again in better lighting conditions.", (screen_width//2 - 300, screen_height//2 + 100), 1, (255, 255, 255), 2)
-        add_text(error_screen, "Press any key to exit", (screen_width//2 - 300, screen_height//2 + 200), 1, (0, 255, 255), 2)
-        cv2.imshow(window_name, error_screen)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        return
-    
+
     # Compute homography
     gaze_points = np.array(gaze_points, dtype=np.float32)
     screen_points = np.array(screen_points, dtype=np.float32)
-    
+
     homography_matrix, _ = cv2.findHomography(gaze_points, screen_points)
+
+    # Save homography matrix
+    np.save('calibration_homography.npy', homography_matrix)
+    print("Calibration completed and file saved as 'calibration_homography.npy'")
     
-    # Save calibration data
-    calibration_dir = os.path.dirname(os.path.abspath(__file__))
-    calibration_file = os.path.join(calibration_dir, 'calibration_homography.npy')
-    np.save(calibration_file, homography_matrix)
+def perform_vertical_calibration():
+    """Perform enhanced vertical calibration to improve up/down gaze tracking."""
+    print("\n*** VERTICAL GAZE CALIBRATION ***")
+    print("This calibration improves vertical (up/down) gaze tracking.")
+    print("Look at each vertical point when instructed.")
     
-    # Show success screen
-    success_screen = background.copy()
-    add_text(success_screen, "CALIBRATION SUCCESSFUL!", (screen_width//2 - 350, screen_height//2 - 100), 1.5, (0, 255, 0), 3)
-    add_text(success_screen, f"Calibration data saved to: {calibration_file}", (screen_width//2 - 350, screen_height//2), 0.8, (255, 255, 255), 2)
-    add_text(success_screen, "Your eye tracking should now be more accurate.", (screen_width//2 - 350, screen_height//2 + 50), 1, (255, 255, 255), 2)
-    add_text(success_screen, "Press any key to exit", (screen_width//2 - 350, screen_height//2 + 150), 1, (0, 255, 255), 2)
+    eye_tracker = EyeTracker(use_vertical_ratio=True, use_3d_pose=True)
+    camera = Camera()
+    if not camera.start():
+        print("Camera initialization failed!")
+        return
     
-    cv2.imshow(window_name, success_screen)
-    cv2.waitKey(0)
+    screen_height = 1080  # Assuming 1080p screen
+    screen_width = 1920
+    
+    # Define vertical calibration points (at screen center, vary vertically)
+    center_x = screen_width // 2
+    vertical_points = [
+        (center_x, 100),             # Top
+        (center_x, screen_height//4), # Upper quarter
+        (center_x, screen_height//2), # Middle
+        (center_x, 3*screen_height//4), # Lower quarter
+        (center_x, screen_height-100) # Bottom
+    ]
+    
+    # Normalize y-coordinates to 0-1 range (0=top, 1=bottom)
+    normalized_points = [y/screen_height for _, y in vertical_points]
+    
+    # Create a window for calibration
+    cv2.namedWindow("Vertical Calibration", cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty("Vertical Calibration", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    
+    calibration_image = np.zeros((screen_height, screen_width, 3), dtype=np.uint8)
+    
+    # For storing calibration data
+    vertical_ratios = []
+    
+    for point_idx, (screen_x, screen_y) in enumerate(vertical_points):
+        # Draw current calibration point
+        calibration_image.fill(0)
+        cv2.circle(calibration_image, (screen_x, screen_y), 30, (0, 255, 0), -1)
+        cv2.line(calibration_image, (screen_x - 50, screen_y), (screen_x + 50, screen_y), (0, 255, 0), 2)
+        cv2.putText(calibration_image, f"Vertical Point {point_idx+1}/{len(vertical_points)}", 
+                   (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.imshow("Vertical Calibration", calibration_image)
+        cv2.waitKey(1)
+        
+        print(f"\nLook at the green dot (Vertical Point {point_idx+1})")
+        time.sleep(1)  # Give user time to focus
+        
+        # Countdown
+        for i in range(3, 0, -1):
+            print(f"Collecting in {i}...")
+            time.sleep(1)
+        
+        print("Collecting... Keep looking at the green dot!")
+
+        frames_collected = 0
+        ratios_collected = []
+
+        while frames_collected < 30:
+            success, frame = camera.read()
+            if not success or frame is None:
+                continue
+
+            result = eye_tracker.process_frame(frame)
+            
+            if result["success"] and "vertical_ratio" in result and result["vertical_ratio"] is not None:
+                ratios_collected.append(result["vertical_ratio"])
+                frames_collected += 1
+                print(f"Collected {frames_collected}/30 vertical samples", end="\r")
+
+            # Show the camera view with tracking visualization
+            vis_frame = eye_tracker.visualize(frame, result)
+            vis_frame_resized = cv2.resize(vis_frame, (640, 360))
+            cv2.imshow("Camera Feed", vis_frame_resized)
+            key = cv2.waitKey(1)
+            if key == 27:  # ESC key
+                cv2.destroyAllWindows()
+                camera.stop()
+                return
+
+            time.sleep(0.05)
+
+        # Take median vertical ratio for stability (median is more robust to outliers)
+        median_ratio = np.median(ratios_collected)
+        vertical_ratios.append(median_ratio)
+        
+        print(f"\nPoint {point_idx+1} complete: vertical ratio = {median_ratio:.4f}")
+
+    # Close visualization windows
     cv2.destroyAllWindows()
+    camera.stop()
     
-    print("\nCalibration completed successfully!")
-    print(f"Calibration data saved as: {calibration_file}")
+    # Perform calibration
+    calibration_success = eye_tracker.perform_vertical_calibration(normalized_points, vertical_ratios)
+    
+    if calibration_success:
+        # Save calibration data
+        eye_tracker.save_calibration('vertical_calibration.npy')
+        print("Vertical calibration completed and saved as 'vertical_calibration.npy'")
+    else:
+        print("Vertical calibration failed. Please try again.")
+
+def test_calibration():
+    """Test the calibration by showing live gaze tracking on screen."""
+    print("\n*** TESTING CALIBRATION ***")
+    
+    homography_file = 'calibration_homography.npy'
+    vertical_calibration_file = 'vertical_calibration.npy'
+    
+    if not os.path.exists(homography_file):
+        print(f"Homography calibration file not found: {homography_file}")
+        print("Please run standard calibration first.")
+        return
+        
+    # Load homography matrix
+    homography = np.load(homography_file, allow_pickle=True)
+    
+    # Initialize eye tracker with vertical calibration if available
+    eye_tracker = EyeTracker(use_vertical_ratio=True, use_3d_pose=True)
+    if os.path.exists(vertical_calibration_file):
+        print(f"Loading vertical calibration from {vertical_calibration_file}")
+        eye_tracker.load_calibration(vertical_calibration_file)
+    else:
+        print("No vertical calibration file found. Using default values.")
+    
+    camera = Camera()
+    if not camera.start():
+        print("Camera initialization failed!")
+        return
+    
+    # Create a visualization window
+    cv2.namedWindow("Calibration Test", cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty("Calibration Test", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    
+    # Create a black screen for visualization
+    screen_width, screen_height = 1920, 1080
+    screen = np.zeros((screen_height, screen_width, 3), dtype=np.uint8)
+    
+    # Add targets to track
+    targets = [
+        (screen_width//2, 100),                # Top center
+        (screen_width//2, screen_height-100),  # Bottom center
+        (100, screen_height//2),               # Left center 
+        (screen_width-100, screen_height//2),  # Right center
+        (screen_width//2, screen_height//2),   # Center
+    ]
+    
+    print("Move your gaze around the screen. Press ESC to exit.")
+    
+    running = True
+    while running:
+        success, frame = camera.read()
+        if not success:
+            print("Failed to read frame")
+            break
+            
+        # Process frame with eye tracker
+        result = eye_tracker.process_frame(frame)
+        
+        # Update visualization screen
+        screen.fill(0)
+        
+        # Draw targets
+        for i, (x, y) in enumerate(targets):
+            cv2.circle(screen, (x, y), 20, (0, 255, 0), -1)
+            cv2.putText(screen, str(i+1), (x-5, y+5), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+        
+        # Transform gaze point using homography
+        if result["success"] and "gaze_point" in result and result["gaze_point"] is not None:
+            gaze_array = np.array([result["gaze_point"][0], result["gaze_point"][1], 1]).reshape(3, 1)
+            screen_point = homography @ gaze_array
+            screen_point /= screen_point[2]
+            
+            screen_x, screen_y = int(screen_point[0].item()), int(screen_point[1].item())
+            
+            # Ensure point is on screen
+            screen_x = max(0, min(screen_width-1, screen_x))
+            screen_y = max(0, min(screen_height-1, screen_y))
+            
+            # Draw gaze point
+            cv2.circle(screen, (screen_x, screen_y), 15, (0, 0, 255), -1)
+            
+            # Add vertical ratio text if available
+            if "vertical_ratio" in result and result["vertical_ratio"] is not None:
+                vertical_ratio = result["vertical_ratio"]
+                cv2.putText(screen, f"V-Ratio: {vertical_ratio:.2f}", 
+                           (screen_width-300, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        
+        # Display visualization and camera view
+        cv2.imshow("Calibration Test", screen)
+        
+        # Resize camera view and show it
+        vis_frame = eye_tracker.visualize(frame, result)
+        vis_frame_resized = cv2.resize(vis_frame, (640, 360))
+        cv2.imshow("Camera Feed", vis_frame_resized)
+        
+        # Check for exit
+        key = cv2.waitKey(1)
+        if key == 27:  # ESC
+            running = False
+    
+    # Cleanup
+    cv2.destroyAllWindows()
+    camera.stop()
+    print("Calibration test completed.")
+
+def main():
+    """Main function for calibration utility."""
+    parser = argparse.ArgumentParser(description='Eye tracking calibration')
+    parser.add_argument('--mode', type=str, default='menu', 
+                        choices=['standard', 'vertical', 'test', 'menu'],
+                        help='Calibration mode: standard, vertical, test, or menu')
+    
+    args = parser.parse_args()
+    
+    if args.mode == 'standard':
+        perform_standard_calibration()
+    elif args.mode == 'vertical':
+        perform_vertical_calibration()
+    elif args.mode == 'test':
+        test_calibration()
+    else:
+        # Interactive menu
+        while True:
+            print("\n=== EYE TRACKING CALIBRATION UTILITY ===")
+            print("1. Standard Calibration (Screen Mapping)")
+            print("2. Vertical Gaze Calibration")
+            print("3. Test Calibration")
+            print("4. Exit")
+            
+            choice = input("\nEnter your choice (1-4): ")
+            
+            if choice == '1':
+                perform_standard_calibration()
+            elif choice == '2':
+                perform_vertical_calibration()
+            elif choice == '3':
+                test_calibration()
+            elif choice == '4':
+                print("Exiting...")
+                break
+            else:
+                print("Invalid choice, please try again.")
 
 if __name__ == "__main__":
-    perform_calibration()
+    main()
