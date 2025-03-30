@@ -18,6 +18,10 @@ from utils.camera import Camera
 from analytics.dynamic_grid_extractor import extract_amazon_product_regions
 from analytics.attention_analytics import AttentionAnalytics
 
+# Import the GazeCursor class
+from gaze_cursor import GazeCursor
+import pyautogui  # Add this import for mouse position fallback
+
 logging.basicConfig(
     level=getattr(logging, config.LOG_LEVEL),
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -28,8 +32,18 @@ def setup_browser():
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    # Use manually downloaded ChromeDriver if available
+    try:
+        chromedriver_path = "path/to/your/chromedriver"  # Update this path
+        service = Service(chromedriver_path)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        logger.info("Using manually specified ChromeDriver")
+    except:
+        logger.info("Attempting to use WebDriver Manager")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    
     return driver
 
 def main():
@@ -38,22 +52,22 @@ def main():
     driver.get(url)
     logger.info(f"Opened webpage: {url}")
 
+    # Initialize the gaze cursor with a larger size and brighter color
+    gaze_cursor = GazeCursor(size=40, color=(0, 255, 0), alpha=0.9)  # Larger, green, more opaque
+    gaze_cursor.start()
+    gaze_cursor.show()  # Show the cursor immediately
+    
     # Add a timestamp for the last extraction
     last_extraction_time = time.time()
 
     product_regions = extract_amazon_product_regions(driver)
-    # In the main loop:
-    current_time = time.time()
-    if current_time - last_extraction_time > 5.0:  # Re-extract every 5 seconds
-        product_regions = extract_amazon_product_regions(driver)
-        last_extraction_time = current_time
-        
     logger.info(f"Extracted {len(product_regions)} potential products from Amazon.")
 
     eye_tracker = EyeTracker()
     camera = Camera()
     if not camera.start():
         logger.error("Failed to start camera. Exiting.")
+        gaze_cursor.stop()
         return
 
     homography = np.load('calibration_homography.npy', allow_pickle=True)
@@ -63,12 +77,24 @@ def main():
     print("Scroll manually, press Ctrl+C, close browser, or terminal to stop...")
 
     try:
+        # Debug counter for gaze points
+        gaze_point_count = 0
+        no_gaze_point_count = 0
+        
         while True:
             try:
                 driver.title  # Check if browser is open
             except:
                 logger.info("Browser closed by user.")
                 break
+
+            # Re-extract product regions periodically
+            current_time = time.time()
+            if current_time - last_extraction_time > 5.0:  # Re-extract every 5 seconds
+                product_regions = extract_amazon_product_regions(driver)
+                last_extraction_time = current_time
+                attention.product_regions = product_regions
+                logger.info(f"Re-extracted {len(product_regions)} products")
 
             success, frame = camera.read()
             if not success or frame is None:
@@ -79,11 +105,18 @@ def main():
             gaze_point = result.get("gaze_point")
 
             if gaze_point:
+                gaze_point_count += 1
                 gaze_array = np.array([gaze_point[0], gaze_point[1], 1]).reshape(3, 1)
                 screen_point = homography @ gaze_array
                 screen_point /= screen_point[2]
                 screen_x, screen_y = int(screen_point[0].item()), int(screen_point[1].item())
                 timestamp = time.time()
+                
+                logger.debug(f"Gaze point detected: ({screen_x}, {screen_y})")
+                
+                # Update the gaze cursor position
+                gaze_cursor.update_position(screen_x, screen_y)
+                gaze_cursor.show()
                 
                 scroll_y = driver.execute_script("return window.pageYOffset;")
                 scroll_x = driver.execute_script("return window.pageXOffset;")
@@ -103,12 +136,26 @@ def main():
                             "duration": 0.1
                         })
                         break
-
+            else:
+                no_gaze_point_count += 1
+                # Use mouse position as fallback when no gaze point is detected
+                mouse_x, mouse_y = pyautogui.position()
+                logger.debug(f"No gaze point detected, using mouse position: ({mouse_x}, {mouse_y})")
+                gaze_cursor.update_position(mouse_x, mouse_y)
+                gaze_cursor.show()
+            
+            # Log gaze detection stats every 50 frames
+            if (gaze_point_count + no_gaze_point_count) % 50 == 0:
+                logger.info(f"Gaze detection stats: {gaze_point_count} detected, {no_gaze_point_count} missed")
+            
             time.sleep(0.1)
 
     except KeyboardInterrupt:
         logger.info("Session ended by user.")
     finally:
+        # Clean up resources
+        logger.info(f"Final gaze detection stats: {gaze_point_count} detected, {no_gaze_point_count} missed")
+        gaze_cursor.stop()
         camera.stop()
         driver.quit()
         eye_tracker.__del__()

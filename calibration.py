@@ -76,15 +76,17 @@ def perform_calibration():
         cv2.destroyAllWindows()
         return
     
-    # Define calibration points - adjust based on screen resolution
+    # Define calibration points - 5x5 grid (25 points)
     x_margin = int(screen_width * 0.1)
     y_margin = int(screen_height * 0.1)
-    x_positions = [x_margin, screen_width // 2, screen_width - x_margin]
-    y_positions = [y_margin, screen_height // 2, screen_height - y_margin]
+    x_step = (screen_width - 2 * x_margin) / 4
+    y_step = (screen_height - 2 * y_margin) / 4
     
     calibration_screen_points = []
-    for y in y_positions:
-        for x in x_positions:
+    for y_idx in range(5):
+        y = int(y_margin + y_idx * y_step)
+        for x_idx in range(5):
+            x = int(x_margin + x_idx * x_step)
             calibration_screen_points.append((x, y))
     
     screen_points = []
@@ -200,7 +202,7 @@ def perform_calibration():
     eye_tracker.__del__()
     
     # If we haven't collected enough points, show an error
-    if len(gaze_points) < 4:
+    if len(gaze_points) < 6:  # Require at least 6 points for a reasonable calibration
         error_screen = background.copy()
         add_text(error_screen, "CALIBRATION FAILED", (screen_width//2 - 300, screen_height//2 - 50), 1.5, (0, 0, 255), 3)
         add_text(error_screen, "Not enough data points collected.", (screen_width//2 - 300, screen_height//2 + 50), 1, (255, 255, 255), 2)
