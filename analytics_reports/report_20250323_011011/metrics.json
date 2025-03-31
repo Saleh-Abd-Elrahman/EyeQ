@@ -1,0 +1,784 @@
+{
+    "session_duration": 26.731505870819092,
+    "total_attention_time": 4.799999999999999,
+    "product_count": 60,
+    "products_by_attention_time": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 329.99,
+            "total_attention_time": 3.1000000000000014,
+            "attention_count": 31,
+            "last_attention_time": 1742688588.368236
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 219.99,
+            "total_attention_time": 0.6,
+            "attention_count": 6,
+            "last_attention_time": 1742688578.433763
+        },
+        {
+            "id": "product_5",
+            "name": "Product 5",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0.5,
+            "attention_count": 5,
+            "last_attention_time": 1742688596.770046
+        },
+        {
+            "id": "product_7",
+            "name": "Product 7",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 0.30000000000000004,
+            "attention_count": 3,
+            "last_attention_time": 1742688597.306447
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742688570.702403
+        },
+        {
+            "id": "product_6",
+            "name": "Product 6",
+            "category": "Budget (< 200\u20ac)",
+            "price": 197.0,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742688596.9073
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 229.99,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742688597.433909
+        }
+    ],
+    "products_by_attention_count": [
+        {
+            "id": "product_1",
+            "name": "Product 1",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 329.99,
+            "total_attention_time": 3.1000000000000014,
+            "attention_count": 31,
+            "last_attention_time": 1742688588.368236
+        },
+        {
+            "id": "product_2",
+            "name": "Product 2",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 219.99,
+            "total_attention_time": 0.6,
+            "attention_count": 6,
+            "last_attention_time": 1742688578.433763
+        },
+        {
+            "id": "product_5",
+            "name": "Product 5",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0.5,
+            "attention_count": 5,
+            "last_attention_time": 1742688596.770046
+        },
+        {
+            "id": "product_7",
+            "name": "Product 7",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 0.30000000000000004,
+            "attention_count": 3,
+            "last_attention_time": 1742688597.306447
+        },
+        {
+            "id": "product_3",
+            "name": "Product 3",
+            "category": "Budget (< 200\u20ac)",
+            "price": 199.99,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742688570.702403
+        },
+        {
+            "id": "product_6",
+            "name": "Product 6",
+            "category": "Budget (< 200\u20ac)",
+            "price": 197.0,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742688596.9073
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 229.99,
+            "total_attention_time": 0.1,
+            "attention_count": 1,
+            "last_attention_time": 1742688597.433909
+        }
+    ],
+    "attention_percentages": {
+        "product_1": 64.58333333333339,
+        "product_2": 12.500000000000004,
+        "product_3": 2.083333333333334,
+        "product_5": 10.416666666666668,
+        "product_6": 2.083333333333334,
+        "product_7": 6.250000000000003,
+        "product_8": 2.083333333333334
+    },
+    "ignored_products": [
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "price": 299.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                501,
+                1340,
+                1121
+            ]
+        },
+        {
+            "id": "product_9",
+            "name": "Product 9",
+            "price": 299.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                2676,
+                546,
+                3359
+            ]
+        },
+        {
+            "id": "product_10",
+            "name": "Product 10",
+            "price": 194.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                546,
+                2676,
+                811,
+                3359
+            ]
+        },
+        {
+            "id": "product_11",
+            "name": "Product 11",
+            "price": 159.79,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                810,
+                2676,
+                1075,
+                3359
+            ]
+        },
+        {
+            "id": "product_12",
+            "name": "Product 12",
+            "price": 249.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                2676,
+                1340,
+                3359
+            ]
+        },
+        {
+            "id": "product_13",
+            "name": "Product 13",
+            "price": 219.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                3359,
+                546,
+                3967
+            ]
+        },
+        {
+            "id": "product_14",
+            "name": "Product 14",
+            "price": 269.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                546,
+                3359,
+                811,
+                3967
+            ]
+        },
+        {
+            "id": "product_15",
+            "name": "Product 15",
+            "price": 279.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                3359,
+                1075,
+                3967
+            ]
+        },
+        {
+            "id": "product_16",
+            "name": "Product 16",
+            "price": 223.28,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                3359,
+                1340,
+                3967
+            ]
+        },
+        {
+            "id": "product_17",
+            "name": "Product 17",
+            "price": 229.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                3967,
+                546,
+                4604
+            ]
+        },
+        {
+            "id": "product_18",
+            "name": "Product 18",
+            "price": 199.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                546,
+                3967,
+                811,
+                4604
+            ]
+        },
+        {
+            "id": "product_19",
+            "name": "Product 19",
+            "price": 189.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                810,
+                3967,
+                1075,
+                4604
+            ]
+        },
+        {
+            "id": "product_20",
+            "name": "Product 20",
+            "price": 289.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                3967,
+                1340,
+                4604
+            ]
+        },
+        {
+            "id": "product_21",
+            "name": "Product 21",
+            "price": 216.49,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                4603,
+                546,
+                5198
+            ]
+        },
+        {
+            "id": "product_22",
+            "name": "Product 22",
+            "price": 359.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                546,
+                4603,
+                811,
+                5198
+            ]
+        },
+        {
+            "id": "product_23",
+            "name": "Product 23",
+            "price": 219.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                4603,
+                1075,
+                5198
+            ]
+        },
+        {
+            "id": "product_24",
+            "name": "Product 24",
+            "price": 199.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                1075,
+                4603,
+                1340,
+                5198
+            ]
+        },
+        {
+            "id": "product_25",
+            "name": "Product 25",
+            "price": 289.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                5198,
+                546,
+                5904
+            ]
+        },
+        {
+            "id": "product_26",
+            "name": "Product 26",
+            "price": 419.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                546,
+                5198,
+                811,
+                5904
+            ]
+        },
+        {
+            "id": "product_27",
+            "name": "Product 27",
+            "price": 312.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                5198,
+                1075,
+                5904
+            ]
+        },
+        {
+            "id": "product_28",
+            "name": "Product 28",
+            "price": 609.0,
+            "category": "Mid-range (500-999\u20ac)",
+            "bbox": [
+                1075,
+                5198,
+                1340,
+                5904
+            ]
+        },
+        {
+            "id": "product_29",
+            "name": "Product 29",
+            "price": 264.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                5904,
+                546,
+                6602
+            ]
+        },
+        {
+            "id": "product_30",
+            "name": "Product 30",
+            "price": 319.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                546,
+                5904,
+                811,
+                6602
+            ]
+        },
+        {
+            "id": "product_31",
+            "name": "Product 31",
+            "price": 219.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                5904,
+                1075,
+                6602
+            ]
+        },
+        {
+            "id": "product_32",
+            "name": "Product 32",
+            "price": 899.0,
+            "category": "Mid-range (500-999\u20ac)",
+            "bbox": [
+                1075,
+                5904,
+                1340,
+                6602
+            ]
+        },
+        {
+            "id": "product_33",
+            "name": "Product 33",
+            "price": 299.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                6602,
+                546,
+                7273
+            ]
+        },
+        {
+            "id": "product_34",
+            "name": "Product 34",
+            "price": 390.15,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                546,
+                6602,
+                811,
+                7273
+            ]
+        },
+        {
+            "id": "product_35",
+            "name": "Product 35",
+            "price": 216.49,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                6602,
+                1075,
+                7273
+            ]
+        },
+        {
+            "id": "product_36",
+            "name": "Product 36",
+            "price": 679.0,
+            "category": "Mid-range (500-999\u20ac)",
+            "bbox": [
+                1075,
+                6602,
+                1340,
+                7273
+            ]
+        },
+        {
+            "id": "product_37",
+            "name": "Product 37",
+            "price": 299.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                7273,
+                546,
+                7947
+            ]
+        },
+        {
+            "id": "product_38",
+            "name": "Product 38",
+            "price": 169.0,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                546,
+                7273,
+                811,
+                7947
+            ]
+        },
+        {
+            "id": "product_39",
+            "name": "Product 39",
+            "price": 269.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                7273,
+                1075,
+                7947
+            ]
+        },
+        {
+            "id": "product_40",
+            "name": "Product 40",
+            "price": 379.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                7273,
+                1340,
+                7947
+            ]
+        },
+        {
+            "id": "product_41",
+            "name": "Product 41",
+            "price": 279.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                7947,
+                546,
+                8546
+            ]
+        },
+        {
+            "id": "product_42",
+            "name": "Product 42",
+            "price": 199.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                546,
+                7947,
+                811,
+                8546
+            ]
+        },
+        {
+            "id": "product_43",
+            "name": "Product 43",
+            "price": 143.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                810,
+                7947,
+                1075,
+                8546
+            ]
+        },
+        {
+            "id": "product_44",
+            "name": "Product 44",
+            "price": 238.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                7947,
+                1340,
+                8546
+            ]
+        },
+        {
+            "id": "product_45",
+            "name": "Product 45",
+            "price": 190.0,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                281,
+                8546,
+                546,
+                9212
+            ]
+        },
+        {
+            "id": "product_46",
+            "name": "Product 46",
+            "price": 549.0,
+            "category": "Mid-range (500-999\u20ac)",
+            "bbox": [
+                546,
+                8546,
+                811,
+                9212
+            ]
+        },
+        {
+            "id": "product_47",
+            "name": "Product 47",
+            "price": 199.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                810,
+                8546,
+                1075,
+                9212
+            ]
+        },
+        {
+            "id": "product_48",
+            "name": "Product 48",
+            "price": 459.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                8546,
+                1340,
+                9212
+            ]
+        },
+        {
+            "id": "product_49",
+            "name": "Product 49",
+            "price": 949.0,
+            "category": "Mid-range (500-999\u20ac)",
+            "bbox": [
+                281,
+                9212,
+                546,
+                9923
+            ]
+        },
+        {
+            "id": "product_50",
+            "name": "Product 50",
+            "price": 199.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                546,
+                9212,
+                811,
+                9923
+            ]
+        },
+        {
+            "id": "product_51",
+            "name": "Product 51",
+            "price": 429.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                9212,
+                1075,
+                9923
+            ]
+        },
+        {
+            "id": "product_52",
+            "name": "Product 52",
+            "price": 335.0,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                9212,
+                1340,
+                9923
+            ]
+        },
+        {
+            "id": "product_53",
+            "name": "Product 53",
+            "price": 219.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                9923,
+                546,
+                10578
+            ]
+        },
+        {
+            "id": "product_54",
+            "name": "Product 54",
+            "price": 1399.0,
+            "category": "Premium (\u2265 1000\u20ac)",
+            "bbox": [
+                546,
+                9923,
+                811,
+                10578
+            ]
+        },
+        {
+            "id": "product_55",
+            "name": "Product 55",
+            "price": 189.99,
+            "category": "Budget (< 200\u20ac)",
+            "bbox": [
+                810,
+                9923,
+                1075,
+                10578
+            ]
+        },
+        {
+            "id": "product_56",
+            "name": "Product 56",
+            "price": 419.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                9923,
+                1340,
+                10578
+            ]
+        },
+        {
+            "id": "product_57",
+            "name": "Product 57",
+            "price": 209.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                281,
+                10578,
+                546,
+                11238
+            ]
+        },
+        {
+            "id": "product_58",
+            "name": "Product 58",
+            "price": 395.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                546,
+                10578,
+                811,
+                11238
+            ]
+        },
+        {
+            "id": "product_59",
+            "name": "Product 59",
+            "price": 379.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                810,
+                10578,
+                1075,
+                11238
+            ]
+        },
+        {
+            "id": "product_60",
+            "name": "Product 60",
+            "price": 319.99,
+            "category": "Affordable (200-499\u20ac)",
+            "bbox": [
+                1075,
+                10578,
+                1340,
+                11238
+            ]
+        }
+    ],
+    "ignored_percentage": 88.33333333333333,
+    "timestamp": 1742688611.752608
+}

@@ -22,7 +22,7 @@ class AttentionAnalytics:
     Class for analyzing eye-tracking attention data from retail shelves.
     """
     
-    def __init__(self, data_dir: str = None):
+    def __init__(self, product_regions: List[Dict[str, Any]] = None, data_dir: str = None):
         """
         Initialize the analytics module.
         
@@ -30,7 +30,8 @@ class AttentionAnalytics:
             data_dir: Directory containing session data files
         """
         self.data_dir = data_dir
-        self.products = []
+        self.product_regions = product_regions 
+        self.products = product_regions or []
         self.attention_history = []
         self.metrics = {}
         self.heatmap = None
@@ -485,10 +486,14 @@ class AttentionAnalytics:
                 return
                 
             # Create a dictionary to track product metrics
-            product_metrics = {p.id: {"name": p.name, "category": p.category, "price": p.price, 
-                                    "total_attention_time": 0, "attention_count": 0,
-                                    "last_attention_time": 0} 
-                            for p in self.products}
+            product_metrics = {p["id"]: {
+                "name": p["name"],
+                "category": p["category"],
+                "price": p["price"],
+                "total_attention_time": 0,
+                "attention_count": 0,
+                "last_attention_time": 0
+            } for p in self.product_regions}
                 
             # Calculate session duration
             timestamps = [record.get("timestamp", 0) for record in self.attention_history]
@@ -544,7 +549,22 @@ class AttentionAnalytics:
                     attention_percentages[pid] = 0
             
             # Find ignored products
-            ignored_products = [p for p in products_list if p["attention_count"] == 0]
+            #ignored_products = [p for p in products_list if p["attention_count"] == 0]
+                # After processing attention history and before creating metrics dictionary
+            
+            # Get all product IDs
+            all_product_ids = [p.get("id") for p in self.products]
+            
+            # Get IDs of products that received attention
+            viewed_product_ids = set(record.get("product_id") for record in self.attention_history 
+                                    if record.get("product_id") is not None)
+            
+            # Find ignored products (those with no attention)
+            ignored_product_ids = [pid for pid in all_product_ids if pid not in viewed_product_ids]
+            ignored_products = [p for p in self.products if p.get("id") in ignored_product_ids]
+            
+            # Calculate ignored percentage
+            ignored_percentage = (len(ignored_products) / len(self.products)) * 100 if self.products else 0
             
             # Create metrics dictionary
             self.metrics = {
@@ -555,7 +575,7 @@ class AttentionAnalytics:
                 "products_by_attention_count": sorted_by_count,
                 "attention_percentages": attention_percentages,
                 "ignored_products": ignored_products,
-                "ignored_percentage": (len(ignored_products) / len(self.products)) * 100 if self.products else 0,
+                "ignored_percentage": ignored_percentage,
                 "timestamp": datetime.now().timestamp()
             }
             
@@ -579,10 +599,10 @@ class AttentionAnalytics:
             # Create empty product metrics
             products_list = [
                 {
-                    "id": p.id,
-                    "name": p.name,
-                    "category": p.category,
-                    "price": p.price,
+                    "id": p["id"],
+                    "name": p.get("name", "Unnamed"),
+                    "category": p.get("category", "Unknown"),
+                    "price": p.get("price", 0),
                     "total_attention_time": 0,
                     "attention_count": 0,
                     "last_attention_time": 0
@@ -597,7 +617,7 @@ class AttentionAnalytics:
                 "product_count": len(self.products),
                 "products_by_attention_time": products_list,
                 "products_by_attention_count": products_list,
-                "attention_percentages": {p.id: 0 for p in self.products},
+                "attention_percentages": {p["id"]: 0 for p in self.products if "id" in p},
                 "ignored_products": products_list,
                 "ignored_percentage": 100,  # All products are ignored
                 "timestamp": datetime.now().timestamp()
@@ -628,44 +648,44 @@ class AttentionAnalytics:
     <meta charset="utf-8">
     <title>Retail Shelf Attention Analysis Report</title>
     <style>
-        body {
+        body {{
             font-family: Arial, sans-serif;
             margin: 20px;
             color: #333;
-        }
-        .header {
+        }}
+        .header {{
             background-color: #f5f5f5;
             padding: 20px;
             border-radius: 5px;
             margin-bottom: 20px;
-        }
-        .section {
+        }}
+        .section {{
             margin-bottom: 30px;
-        }
-        .chart-container {
+        }}
+        .chart-container {{
             text-align: center;
             margin: 20px 0;
-        }
-        .chart {
+        }}
+        .chart {{
             max-width: 100%;
             border: 1px solid #ddd;
             border-radius: 5px;
-        }
-        table {
+        }}
+        table {{
             width: 100%;
             border-collapse: collapse;
-        }
-        th, td {
+        }}
+        th, td {{
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
-        }
-        th {
+        }}
+        th {{
             background-color: #f5f5f5;
-        }
-        .highlight {
+        }}
+        .highlight {{
             background-color: #FFFFE0;
-        }
+        }}
     </style>
 </head>
 <body>
@@ -805,10 +825,12 @@ class AttentionAnalytics:
             ignored_products_table = ""
             try:
                 for product in ignored_products:
+                    price_display = f"{product.get('price', 0):.2f}"
+                    currency = product.get('currency', '$')
                     ignored_products_table += f"""<tr>
                 <td>{product["name"]}</td>
                 <td>{product["category"]}</td>
-                <td>${product["price"]:.2f}</td>
+                <td>${currency}{price_display}</td>
             </tr>"""
                     
                 if not ignored_products:

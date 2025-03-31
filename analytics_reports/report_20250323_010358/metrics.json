@@ -1,0 +1,52 @@
+{
+    "session_duration": 24.892640113830566,
+    "total_attention_time": 18.499999999999993,
+    "product_count": 60,
+    "products_by_attention_time": [
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 679.0,
+            "total_attention_time": 16.09999999999996,
+            "attention_count": 161,
+            "last_attention_time": 1742688237.898737
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 2.400000000000001,
+            "attention_count": 24,
+            "last_attention_time": 1742688217.650431
+        }
+    ],
+    "products_by_attention_count": [
+        {
+            "id": "product_4",
+            "name": "Product 4",
+            "category": "Mid-range (500-999\u20ac)",
+            "price": 679.0,
+            "total_attention_time": 16.09999999999996,
+            "attention_count": 161,
+            "last_attention_time": 1742688237.898737
+        },
+        {
+            "id": "product_8",
+            "name": "Product 8",
+            "category": "Affordable (200-499\u20ac)",
+            "price": 269.99,
+            "total_attention_time": 2.400000000000001,
+            "attention_count": 24,
+            "last_attention_time": 1742688217.650431
+        }
+    ],
+    "attention_percentages": {
+        "product_4": 87.02702702702683,
+        "product_8": 12.972972972972983
+    },
+    "ignored_products": [],
+    "ignored_percentage": 0.0,
+    "timestamp": 1742688238.223403
+}

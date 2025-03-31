@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 ### Step 4: Verify Installation
 ```bash
-python -c "import cv2; import mediapipe; import numpy; import matplotlib; import PyQt5; import pandas; print('All dependencies successfully installed!')"
+python -c "import cv2; import mediapipe; import numpy; import matplotlib; import PyQt5; import pandas; import selenium; print(' All dependencies successfully installed!')"
 ```
 
 ## Troubleshooting

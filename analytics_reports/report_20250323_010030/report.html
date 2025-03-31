@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Retail Shelf Attention Analysis Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .chart {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .highlight {
+            background-color: #FFFFE0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Retail Shelf Attention Analysis Report</h1>
+        <p>Generated on: 2025-03-23 01:00:31</p>
+        <p>Session Duration: 5.25 seconds</p>
+    </div>
+    
+    <div class="section">
+        <h2>Key Findings</h2>
+        <ul>
+            <li>Total products analyzed: 60</li>
+            <li>Total attention time: 0.00 seconds</li>
+            <li>Products receiving no attention: 0 (0.0%)</li>
+            <li>Most viewed product: None (0 views)</li>
+            <li>Product with longest attention: None (0.00 seconds)</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2>Product Attention Analysis</h2>
+        <div class="chart-container">
+            <img class="chart" src="product_attention.png" alt="Product Attention Chart">
+        </div>
+        
+        <h3>Top 5 Products by Attention Time</h3>
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Product</th>
+                <th>Attention Time (s)</th>
+                <th>View Count</th>
+                <th>Average Time per View (s)</th>
+            </tr>
+            
+        </table>
+    </div>
+    
+    <div class="section">
+        <h2>Attention Timeline</h2>
+        <div class="chart-container">
+            <img class="chart" src="attention_timeline.png" alt="Attention Timeline">
+        </div>
+        <p>This chart shows how attention shifted between products over time during the session.</p>
+    </div>
+    
+    <div class="section">
+        <h2>Category Analysis</h2>
+        <div class="chart-container">
+            <img class="chart" src="category_breakdown.png" alt="Category Breakdown">
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Attention Heatmap</h2>
+        <div class="chart-container">
+            <img class="chart" src="heatmap.png" alt="Attention Heatmap">
+        </div>
+        <p>The heatmap visualization shows the areas of the shelf that received the most attention.</p>
+    </div>
+    
+    <div class="section">
+        <h2>Products Receiving No Attention</h2>
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: center;">No ignored products</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
