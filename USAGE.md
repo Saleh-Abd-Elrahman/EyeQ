@@ -2,9 +2,19 @@
 
 ## Getting Started
 
-After completing the installation process outlined in `INSTALLATION.md`, follow these instructions to run the smart eye-tracking shelf system.
+After completing the installation process outlined in `INSTALLATION.md`, follow these instructions to run the smart eye-tracking system.
 
 ## Running the System
+
+### Calibration
+
+Before using the system, it's recommended to run the calibration utility:
+
+```bash
+python calibration.py
+```
+
+Follow the on-screen instructions to complete the calibration process. This will improve the accuracy of the eye tracking.
 
 ### Basic Usage
 
@@ -24,96 +34,115 @@ After completing the installation process outlined in `INSTALLATION.md`, follow 
 
 3. The system will:
    - Automatically detect connected cameras
-   - Prompt you to select a camera if multiple are available
-   - Open the dashboard interface
+   - Start Chrome browser with an Amazon search page
+   - Initialize eye tracking
+   - Show a gaze cursor controlled by your eye movements
+   - Start analyzing your gaze attention on Amazon products
 
 ### Configuration
 
 You can customize the system behavior by modifying the `config.py` file:
 
 - `CAMERA_INDEX`: Specify which camera to use (default: 0)
+- `FRAME_WIDTH` and `FRAME_HEIGHT`: Set camera resolution
 - `DETECTION_THRESHOLD`: Adjust the confidence threshold for eye detection
-- `RECORDING_ENABLED`: Enable/disable data recording
-- `VISUALIZATION_LEVEL`: Set level of real-time visualization (0=none, 1=basic, 2=detailed)
-- `DATA_DIR`: Set the directory for storing session data and reports (default: "data")
+- `VISUALIZATION_LEVEL`: Set level of real-time visualization
+- `LOG_LEVEL`: Set logging verbosity (INFO, DEBUG, etc.)
 
 ### Command Line Options
 
+You can modify the eye tracking debug tool behavior with these options:
+
 ```bash
 # Use a specific camera
-python main.py --camera 1
+python eye_tracking_debug.py --camera 1
 
-# Run in debug mode
-python main.py --debug
+# Set camera dimensions
+python eye_tracking_debug.py --width 1280 --height 720
 
-# Process a pre-recorded video instead of live feed
-python main.py --video path/to/video.mp4
+# Adjust detection confidence
+python eye_tracking_debug.py --detection-confidence 0.6
 
-# Specify output folder for analytics
-python main.py --output path/to/output
+# Flip camera horizontally
+python eye_tracking_debug.py --flip
 ```
 
-## Dashboard Interface
+## Interacting with the System
 
-The dashboard contains the following sections:
+### Keyboard Controls
 
-1. **Live View**: Shows real-time camera feed with overlay of eye-tracking data
-2. **Heat Map**: Displays attention density across the shelf
-3. **Product Analytics**: Lists products sorted by attention metrics
-4. **Timeline Analysis**: Shows attention patterns over time
-5. **Export Options**: Save data and reports in various formats
+- `ESC`: Toggle cursor control on/off - when disabled, you can use your normal mouse
+- `Ctrl+C`: Gracefully exit the application
+- In debug mode:
+  - `m`: Toggle face mesh visualization
+  - `f`: Toggle horizontal flip
+  - `s`: Take a screenshot
+  - `q` or `ESC`: Exit debug tool
 
-### Keyboard Shortcuts
+### Using the Gaze Cursor
 
-- `Space`: Pause/resume live tracking
-- `R`: Start/stop recording session
-- `H`: Toggle heatmap visualization
-- `S`: Save current analytics snapshot
-- `G`: Generate analytics report
-- `Esc`: Exit application
+The gaze cursor is enabled by default and allows you to control your mouse pointer with eye movements. This enables a hands-free browsing experience. To temporarily disable it and use your regular mouse, press `ESC`.
 
 ## Data Analysis
 
-### Exporting Data
+### Generated Data
 
-1. Click the "Export" button in the dashboard
-2. Choose from available formats: CSV, JSON, Excel, or PDF report
-3. Select the time range for the data export
-4. Specify the export location
+The system automatically generates:
 
-### Generating Reports
+1. Attention data for products viewed on Amazon
+2. Gaze coordinates over time
+3. Product interaction analytics
 
-1. Click the "Generate Report" button in the dashboard or press `G`
-2. Select the output directory for the report
-3. The system will generate a comprehensive HTML report with:
-   - Attention heatmap visualization
-   - Product attention chart showing time spent on each product
-   - Timeline visualization of attention patterns
-   - Category breakdown chart
-   - Tables of most and least viewed products
-   - Key metrics and statistics
+### Viewing Eye Tracking Data
 
-4. After generation, you'll be prompted to open the report in your browser
+You can view the calibration data with:
 
-### Interpreting Results
+```bash
+python calibration_viewer.py
+```
 
-- **Attention Time**: Duration (in seconds) customers looked at each product
-- **Gaze Patterns**: Sequence of products viewed in typical customer journey
-- **Engagement Score**: Combined metric of frequency and duration of views
-- **Blind Spots**: Areas with less than 5% of total attention
-- **Category Performance**: How different product categories compare in attracting attention
-- **Ignored Products**: Products that received no attention during the session
+This displays the homography matrix used for mapping eye gaze to screen coordinates.
+
+### Running Test Reports
+
+To generate a sample report using existing data:
+
+```bash
+python test_report.py
+```
+
+## Amazon Integration
+
+The system is configured to work with Amazon product search pages by default. When the main application runs:
+
+1. It automatically opens Chrome browser with Amazon search
+2. Extracts product regions from the page using the dynamic grid extractor
+3. Tracks your gaze as you browse products
+4. Records which products you view and for how long
+5. You can scroll the page manually to view more products
 
 ## Troubleshooting
 
-- **Poor Tracking Performance**: Ensure adequate lighting and camera positioning
-- **High CPU Usage**: Lower the VISUALIZATION_LEVEL in config.py
-- **Data Not Saving**: Check write permissions for the output directory
-- **Camera Not Detected**: Try specifying the camera index explicitly with --camera
-- **Report Generation Issues**: 
-  - Make sure the data directory exists and is writable
-  - Check logs for any specific error messages
-  - Try generating reports from existing session data using the test script:
-    ```bash
-    python test_report.py
-    ```
+- **Poor Tracking Performance**: 
+  - Use the eye_tracking_debug.py tool to diagnose issues
+  - Ensure adequate lighting without glare
+  - Position your face clearly visible to the camera
+  
+- **Browser Doesn't Open**: 
+  - Check that Chrome is installed in the standard location
+  - Try updating the chromedriver_path in main.py
+  
+- **Calibration Fails**:
+  - Ensure you are in good lighting conditions
+  - Follow the green dots with your eyes during calibration
+  - Try to keep your head relatively still during calibration
+  
+- **Cursor Control Issues**:
+  - Press ESC to toggle cursor control on/off
+  - Recalibrate the system for better accuracy
+  - Check that the calibration_homography.npy file exists
+
+- **System Doesn't Detect Products**:
+  - Ensure the Amazon page has loaded completely
+  - Try a different product search query
+  - Check your internet connection

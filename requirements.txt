@@ -14,3 +14,6 @@ webdriver-manager>=4.0.1
 beautifulsoup4>=4.12.3
 requests>=2.31.0
 screeninfo>=0.8.0
+pynput>=1.7.0
+pyautogui>=0.9.50
+webbrowser>=0.0.1

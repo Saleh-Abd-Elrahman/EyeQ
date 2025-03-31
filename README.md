@@ -1,22 +1,23 @@
 # Smart Eye-Tracking Shelves for Retail Optimization
 
-An AI-powered solution for analyzing customer interactions with retail shelves through eye-tracking.
+An AI-powered solution for analyzing customer interactions with retail shelves through eye-tracking and providing actionable insights for e-commerce product optimization.
 
 ## Features
 
 - **Attention Analysis**: Track which products attract the most attention
+- **E-commerce Integration**: Works with Amazon product pages for real-world analytics
+- **Gaze Cursor Control**: Control cursor with eye movements for intuitive interaction
+- **Calibration System**: Easy setup process for accurate eye tracking
 - **Engagement Measurement**: Determine how long customers look at a product
 - **Promotional Effectiveness**: Analyze which price tags or promotional labels capture interest
-- **Purchase Decision Insights**: See where shoppers look before making a purchase
-- **Blind Spot Identification**: Identify areas of the shelf that are ignored
-- **Self-Checkout Integration**: Track user experience at self-checkout systems
+- **Blind Spot Identification**: Identify areas of the page that are ignored
 - **Comprehensive Reports**: Generate detailed HTML reports with visualizations and metrics
 
 ## System Components
 
 1. **Camera Module**: Handles video input from RGB cameras
-2. **Eye-Tracking System**: Detects and tracks customer eye movements
-3. **Shelf Analysis**: Maps eye coordinates to products on shelves
+2. **Eye-Tracking System**: Detects and tracks customer eye movements using MediaPipe
+3. **Dynamic Grid Extractor**: Maps eye coordinates to products on e-commerce pages
 4. **Data Collection**: Stores tracking data for future analysis
 5. **Analytics Dashboard**: Visualizes insights from the collected data
 6. **Report Generator**: Creates comprehensive HTML reports with charts and metrics
@@ -30,6 +31,9 @@ An AI-powered solution for analyzing customer interactions with retail shelves t
 - Matplotlib (for visualizations)
 - PyQt5 (for dashboard UI)
 - Pandas (for data analysis)
+- Selenium (for web browser integration)
+- Chrome WebDriver
+- Pynput (for cursor control)
 
 ## Installation
 
