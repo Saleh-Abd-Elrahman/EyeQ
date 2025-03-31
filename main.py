@@ -63,7 +63,7 @@ def main():
     product_regions = extract_amazon_product_regions(driver)
     logger.info(f"Extracted {len(product_regions)} potential products from Amazon.")
 
-    eye_tracker = EyeTracker()
+    eye_tracker = EyeTracker(invert_x_gaze=True)
     camera = Camera()
     if not camera.start():
         logger.error("Failed to start camera. Exiting.")

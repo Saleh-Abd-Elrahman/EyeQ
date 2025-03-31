@@ -47,7 +47,7 @@ def perform_calibration():
     cv2.resizeWindow(camera_window, 480, 270)  # Smaller window for camera feed
     
     # Initialize eye tracker and camera
-    eye_tracker = EyeTracker()
+    eye_tracker = EyeTracker(invert_x_gaze=True)
     camera = Camera(horizontal_flip=True)  # Apply horizontal flip for more intuitive experience
     
     if not camera.start():

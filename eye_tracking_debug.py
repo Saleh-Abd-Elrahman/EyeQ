@@ -89,7 +89,8 @@ def main():
         # Initialize eye tracker with provided confidence values
         eye_tracker = EyeTracker(
             min_detection_confidence=args.detection_confidence,
-            min_tracking_confidence=args.tracking_confidence
+            min_tracking_confidence=args.tracking_confidence,
+            invert_x_gaze=True
         )
         
         # Create display window

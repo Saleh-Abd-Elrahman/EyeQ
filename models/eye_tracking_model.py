@@ -77,9 +77,6 @@ class EyeTracker:
                 "success": False,
                 "error": "Invalid frame input"
             }
-        if self.invert_x_gaze:
-            normalized_gaze[0] = -normalized_gaze[0]  # Invert X direction
-            
             
         self.frame_count += 1
         frame_height, frame_width, _ = frame.shape
@@ -155,6 +152,10 @@ class EyeTracker:
             else:
                 normalized_gaze = gaze_vector
             
+            # Apply invert_x_gaze if enabled
+            if self.invert_x_gaze:
+                normalized_gaze[0] = -normalized_gaze[0]  # Invert X direction
+                
             # Estimate gaze point on the frame
             # This is very simplified - for actual eye tracking, calibration is needed
             gaze_scale = 200  # Arbitrary scale factor, would be calibrated in real use
